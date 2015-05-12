@@ -1,0 +1,27 @@
+{
+  "name": "himalaya",
+  "version": "0.0.1",
+  "description": "HTML to JSON parser",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andrejewski/himalaya.git"
+  },
+  "keywords": [
+    "html",
+    "parser",
+    "json"
+  ],
+  "author": "Chris Andrejewski <christopher.andrejewski@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/andrejewski/himalaya/issues"
+  },
+  "homepage": "https://github.com/andrejewski/himalaya",
+  "dependencies": {
+    "mocha": "^2.2.4"
+  }
+}
