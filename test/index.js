@@ -8,6 +8,7 @@ function print(s) {
 
 // README demo
 // print(h.parse(["<div class='post post-featured'><p>Himalaya parsed me...</p><!-- ...and I liked it. --></div>"]));
+// return;
 
 describe('html-parser', function() {
 
@@ -15,13 +16,15 @@ describe('html-parser', function() {
 		it('should return the AST of given HTML', function() {
 			var h1 = "<html><h1>Hello, World</h1></html>";
 			var d1 = [{
-				kind: 'element',
+				type: 'Element',
 				tagName: 'html',
+				attributes: {},
 				children: [{
-					kind: 'element',
+					type: 'Element',
 					tagName: 'h1',
+					attributes: {},
 					children: [{
-						kind: 'text',
+						type: 'Text',
 						content: 'Hello, World'
 					}]
 				}]
@@ -30,22 +33,27 @@ describe('html-parser', function() {
 
 			var h2 = "<div class='section widget'><b disabled>Poop</b><p>Pee</p></div>";
 			var d2 = [{
-				kind: 'element',
+				type: 'Element',
 				tagName: 'div',
-				className: ['section', 'widget'],
+				attributes: {
+					className: ['section', 'widget']
+				},
 				children: [{
-					kind: 'element',
+					type: 'Element',
 					tagName: 'b',
-					disabled: 'disabled',
+					attributes: {
+						disabled: 'disabled'
+					},
 					children: [{
-						kind: 'text',
+						type: 'Text',
 						content: 'Poop'
 					}]
 				}, {
-					kind: 'element',
+					type: 'Element',
 					tagName: 'p',
+					attributes: {},
 					children: [{
-						kind: 'text',
+						type: 'Text',
 						content: 'Pee'
 					}]
 				}]
@@ -54,13 +62,14 @@ describe('html-parser', function() {
 
 			var h3 = "<b><!--comment text-->words</b>";
 			var d3 = [{
-				kind: 'element',
+				type: 'Element',
 				tagName: 'b',
+				attributes: {},
 				children: [{
-					kind: 'comment',
+					type: 'Comment',
 					content: 'comment text'
 				}, {
-					kind: 'text',
+					type: 'Text',
 					content: 'words'
 				}]
 			}];
@@ -68,12 +77,14 @@ describe('html-parser', function() {
 
 			var h4 = "<div style='width: 360px; height: 120px; background-color: #fff'></div>";
 			var d4 = [{
-				kind: 'element',
+				type: 'Element',
 				tagName: 'div',
-				style: {
-					width: '360px',
-					height: '120px',
-					backgroundColor: '#fff'
+				attributes: {
+					style: {
+						width: '360px',
+						height: '120px',
+						backgroundColor: '#fff'
+					}
 				},
 				children: []
 			}];
@@ -81,12 +92,14 @@ describe('html-parser', function() {
 
 			var h5 = "<div data-num=0 data-word='poop' data-cake='2'></div>";
 			var d5 = [{
-				kind: 'element',
+				type: 'Element',
 				tagName: 'div',
-				dataset: {
-					num: 0,
-					word: 'poop',
-					cake: 2
+				attributes: {
+					dataset: {
+						num: 0,
+						word: 'poop',
+						cake: 2
+					}
 				},
 				children: []
 			}];
@@ -94,17 +107,19 @@ describe('html-parser', function() {
 
 			var h6 = "<p>One two<p>three four";
 			var d6 = [{
-				kind: 'element',
+				type: 'Element',
 				tagName: 'p',
+				attributes: {},
 				children: [{
-					kind: 'text',
+					type: 'Text',
 					content: 'One two'
 				}]
 			}, {
-				kind: 'element',
+				type: 'Element',
 				tagName: 'p',
+				attributes: {},
 				children: [{
-					kind: 'text',
+					type: 'Text',
 					content: 'three four'
 				}]
 			}];

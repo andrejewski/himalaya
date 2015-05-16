@@ -14,7 +14,11 @@ var html = require('fs').readFileSync('/webpage.html');
 var json = himalaya.parse(html);
 ```
 
-## Input/Output
+## Parser AST Specification
+
+Himalaya has a specification for its output. Essentially, everything is a node and can either be an `Element`, `Comment`, or `Text` node. The [full specification](https://github.com/andrejewski/himalaya/tree/master/docs/ast-spec.md) provides the complete details.
+
+### Example Input/Output
 
 ```html
 <div class='post post-featured'>
@@ -26,33 +30,36 @@ var json = himalaya.parse(html);
 ```json
 [
   {
-    "className": [
-      "post",
-      "post-featured"
-    ],
+    "type": "Element",
     "tagName": "div",
+    "attributes": {
+      "className": [
+        "post",
+        "post-featured"
+      ]
+    },
     "children": [
       {
+        "type": "Element",
         "tagName": "p",
+        "attributes": {},
         "children": [
           {
-            "content": "Himalaya parsed me...",
-            "kind": "text"
+            "type": "Text",
+            "content": "Himalaya parsed me..."
           }
-        ],
-        "kind": "element"
+        ]
       },
       {
+        "type": "Comment",
         "content": " ...and I liked it. ",
-        "kind": "comment"
       }
-    ],
-    "kind": "element"
+    ]
   }
 ]
 ```
 
-*Note*: Text nodes containing only whitespace were removed from the output for readability.
+*Note:* Text nodes containing only whitespace were removed from the output for readability.
 
 ## Features
 

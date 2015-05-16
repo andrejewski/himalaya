@@ -19,7 +19,7 @@ function parse(str) {
 }
 
 function Node(kind, data) {
-	data.kind = kind;
+	data.type = kind;
 	return data;
 }
 
@@ -30,11 +30,11 @@ function parseUntil(str, stack) {
 		var nextTag = str.indexOf(tagStart);
 		if(!~nextTag) {
 			// only text left
-			nodes.push(Node('text', {content: str}));
+			nodes.push(Node('Text', {content: str}));
 			str = "";
 		} else if(nextTag) {
 			// text before tag
-			nodes.push(Node('text', {
+			nodes.push(Node('Text', {
 				content: str.slice(0, nextTag)
 			}));
 			str = str.slice(nextTag);
@@ -42,7 +42,7 @@ function parseUntil(str, stack) {
 			if(!str.indexOf(commentStart)) {
 				// comment
 				var end = str.indexOf(commentEnd);
-				nodes.push(Node('comment', {
+				nodes.push(Node('Comment', {
 					content: str.slice(commentStart.length, end)
 				}));
 				str = str.slice(end + commentEnd.length);
@@ -50,7 +50,7 @@ function parseUntil(str, stack) {
 				// open tag
 				var results = parseTag(str, stack);
 				if(results.tag) {
-					nodes.push(Node('element', results.tag));
+					nodes.push(Node('Element', results.tag));
 					str = results.str;
 				}
 				if(results.stack.length !== stack.length) {
@@ -89,10 +89,12 @@ function parseTag(str, stack) {
 	}
 
 	var attrs = parseAttrs(str.slice(tagNameEnd));
-	var tag = attrs.attributes;
+	var tag = {
+		tagName: tagName,
+		attributes: attrs.attributes
+	};
 	str = attrs.str;
 
-	tag.tagName = tagName;
 	if(!str.indexOf('/>')) {
 		str = str.slice(2);
 	} else {
@@ -101,9 +103,7 @@ function parseTag(str, stack) {
 		if(~childlessTags.indexOf(lowTagName)) {
 			var end = '</'+tagName+'>';
 			var idx = str.indexOf(end);
-			if(!~idx) {
-				throw new Error('<'+tagName+'> missing closing '+end+' tag.');
-			}
+			if(!~idx) idx = Infinity;
 			tag.content = str.slice(0, idx);
 			str = str.slice(idx);
 		} else if(!~voidTags.indexOf(lowTagName)) {
