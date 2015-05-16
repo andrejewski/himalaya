@@ -1,6 +1,6 @@
 {
   "name": "himalaya",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "HTML to JSON parser",
   "main": "index.js",
   "scripts": {
@@ -13,6 +13,7 @@
   "keywords": [
     "html",
     "parser",
+    "ast",
     "json"
   ],
   "author": "Chris Andrejewski <christopher.andrejewski@gmail.com>",
