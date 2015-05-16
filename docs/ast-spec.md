@@ -19,9 +19,12 @@ enum Type {
 ```
 
 Nodes can be of `type`: 
-	- `Element`, which are tags such as `<body>`, `<div>`, `<style>`
-	- `Comment`, which are `<!-- {...} -->` sections
-	- `Text`, which are text contents
+
+- `Element`, which are tags such as `<body>`, `<div>`, `<style>`
+
+- `Comment`, which are `<!-- {...} -->` sections
+
+- `Text`, which are text contents
 
 ## Element Node
 
@@ -34,7 +37,7 @@ interface Element <: Node {
 ```
 
 All element nodes have a `tagName` and `attributes` property. These nodes also have some optional properties:
-	
+
 - `children: [ Node ];` Element nodes can have child nodes of any type.
 
 - `content: string;` Elements that do not have their contents parsed (i.e. `script` and `style` tags) will have their content placed in this property. 
