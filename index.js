@@ -39,7 +39,7 @@ function parseUntil(str, stack) {
 			}));
 			str = str.slice(nextTag);
 		} else {
-			if(!str.indexOf(commentStart)) {
+			if(startsWithCommentStart(str)) {
 				// comment
 				var end = str.indexOf(commentEnd);
 				nodes.push(Node('Comment', {
@@ -95,7 +95,7 @@ function parseTag(str, stack) {
 	};
 	str = attrs.str;
 
-	if(!str.indexOf('/>')) {
+	if(startsWithSelfClose(str)) {
 		str = str.slice(2);
 	} else {
 		str = str.slice(1);
@@ -131,7 +131,7 @@ function parseAttrs(str) {
 			attrs.className = value.split(' ');
 		} else if(property === 'style') {
 			attrs.style = parseStyle(value);
-		} else if (!property.indexOf('data-')) {
+		} else if (startsWithDataDash(property)) {
 			attrs.dataset = attrs.dataset || {};
 			var key = camelCase(property.slice(5));
 			attrs.dataset[key] = castValue(value);
@@ -201,6 +201,29 @@ function castValue(str) {
 	var num = +str;
 	if(!isNaN(num)) return num;
 	return str;
+}
+
+function startsWithCommentStart(s) {
+	return (
+		s.charAt(0) === '<' &&
+		s.charAt(1) === '!' &&
+		s.charAt(2) === '-' &&
+		s.charAt(3) === '-');
+}
+
+function startsWithSelfClose(s) {
+	return (
+		s.charAt(0) === '/' &&
+		s.charAt(1) === '>');
+}
+
+function startsWithDataDash(s) {
+	return (
+		s.charAt(0) === 'd' &&
+		s.charAt(1) === 'a' &&
+		s.charAt(2) === 't' &&
+		s.charAt(3) === 'a' &&
+		s.charAt(4) === '-');
 }
 
 module.exports = {
