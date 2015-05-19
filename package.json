@@ -1,6 +1,6 @@
 {
   "name": "himalaya",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "HTML to JSON parser",
   "main": "index.js",
   "scripts": {
@@ -22,7 +22,7 @@
     "url": "https://github.com/andrejewski/himalaya/issues"
   },
   "homepage": "https://github.com/andrejewski/himalaya",
-  "dependencies": {
-    "mocha": "^2.2.4"
+  "devDependencies": {
+    "mocha": "^2.2.5"
   }
 }
