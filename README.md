@@ -8,11 +8,19 @@ npm install himalaya
 
 ## Usage
 
-```javascript
+```js
 var himalaya = require('himalaya');
 var html = require('fs').readFileSync('/webpage.html');
 var json = himalaya.parse(html);
 ```
+
+Installed globally, Himalaya can also be used from the command-line to convert HTML files to JSON files.
+
+```bash
+himalaya webpage.html webpage.json
+```
+
+Run `himalaya --help` for more information.
 
 ## Parser AST Specification
 

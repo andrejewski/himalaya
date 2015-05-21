@@ -1,8 +1,11 @@
 {
   "name": "himalaya",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "HTML to JSON parser",
   "main": "index.js",
+  "bin": {
+    "himalaya": "./bin/himalaya.js"
+  },
   "scripts": {
     "test": "mocha"
   },
