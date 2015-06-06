@@ -14,10 +14,12 @@ var html = require('fs').readFileSync('/webpage.html');
 var json = himalaya.parse(html);
 ```
 
-Installed globally, Himalaya can also be used from the command-line to convert HTML files to JSON files.
+Installed globally, Himalaya can also be used from the command-line to convert HTML files to JSON files, or as a pipe transform.
 
 ```bash
 himalaya webpage.html webpage.json
+# or as a pipe
+echo "<h1>Hello</h1>" | himalaya > hello.json
 ```
 
 Run `himalaya --help` for more information.

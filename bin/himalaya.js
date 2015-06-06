@@ -2,13 +2,14 @@
 
 function help() {
 /*	
-    Usage: himalaya src [dest]
+    Usage: himalaya [file] [dest]
     
-    src: HTML file
-    dest: (optional) JSON file destination
+    (no args):      pipe in HTML, pipe out JSON
+    file:           HTML file location
+    dest:           JSON file destination
 
-    --help, -h: displays this
-    --version, -v: prints himalaya's version
+    -h, --help:     displays this
+    -v, --version:  prints himalaya's version
 
     if dest is not provided, himalaya prints to stdout
 */
@@ -20,6 +21,21 @@ var himalaya = require('..');
 
 var args = process.argv.slice(2);
 var root = process.cwd();
+
+function toJSON(data) {
+	return JSON.stringify(data, null, 2);
+}
+
+if(!args.length) {
+	process.stdin.resume();
+	process.stdin.setEncoding('utf8');
+	return process.stdin.on('data', function(text) {
+		var data = himalaya.parse(text);
+		var json = toJSON(data);
+		process.stdout.write(json);
+		process.exit(0);
+	});
+}
 
 var flag = args[0].toLowerCase();
 
@@ -41,7 +57,7 @@ var dest = args[1]
 
 var text = fs.readFileSync(src);
 var data = himalaya.parse(text);
-var cout = JSON.stringify(data, null, 2);
+var cout = toJSON(data);
 
 if(dest) {
 	fs.writeFileSync(dest, cout);
