@@ -96,6 +96,23 @@ Himalaya handles a lot of HTML's fringe cases, like:
 ### Preserves Whitespace
 Himalaya does not cut corners and returns an accurate representation of the HTML supplied.
 
+## Going back to HTML
+Himalaya provides translation functions that can take the Himalaya AST and output eqivalent HTML and Jade.
+
+The following example does absolutely nothing. It simply parses the HTML to JSON then parses the JSON back into HTML, which is the exact same as the original. (Of course if the original was malformed, Himalaya probably buffed out the kinks.)
+
+```js
+var fs = require('fs');
+var himalaya = require('himalaya');
+var toHTML = require('himalaya/translate').toHTML;
+
+var html = fs.readFileSync('/webpage.html');
+var json = himalaya.parse(html);
+fs.writeFileSync('/webpage.html', toHTML(json));
+```
+
+The same can be done with [Jade](http://jade-lang.com/) using the `toJade` function of the same module. These functions have additional options which can be found in their [reference document for translations](https://github.com/andrejewski/himalaya/tree/master/docs/translation.md).
+
 ## Why "Himalaya"?
 
 [First, my friends weren't very helpful.](https://twitter.com/compooter/status/597908517132042240) Except Josh, Josh had my back.

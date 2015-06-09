@@ -29,12 +29,15 @@ function toJSON(data) {
 if(!args.length) {
 	process.stdin.resume();
 	process.stdin.setEncoding('utf8');
-	return process.stdin.on('data', function(text) {
+	process.stdin.on('data', function(text) {
 		var data = himalaya.parse(text);
 		var json = toJSON(data);
 		process.stdout.write(json);
+	});
+	process.stdin.on('end', function() {
 		process.exit(0);
 	});
+	return;
 }
 
 var flag = args[0].toLowerCase();
