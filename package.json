@@ -27,5 +27,8 @@
   "homepage": "https://github.com/andrejewski/himalaya",
   "devDependencies": {
     "mocha": "^2.2.5"
+  },
+  "dependencies": {
+    "paul": "0.0.3"
   }
 }
