@@ -1,4 +1,8 @@
 
+(function() {
+
+var root = this;
+
 var tagStart = '<';
 var tagEnd = '>';
 
@@ -6,11 +10,11 @@ var commentStart = '<!--';
 var commentEnd = '-->';
 
 var voidTags = [
-	"!doctype", "area", "base", "br", "col", "command", 
-	"embed", "hr", "img", "input", "keygen", "link", 
+	"!doctype", "area", "base", "br", "col", "command",
+	"embed", "hr", "img", "input", "keygen", "link",
 	"meta", "param", "source", "track", "wbr"];
 var closingTags = [
-	"colgroup", "dd", "dt", "li", "options", "p", 
+	"colgroup", "dd", "dt", "li", "options", "p",
 	"td", "tfoot", "th", "thead", "tr"];
 var childlessTags = ['style', 'script', 'template'];
 
@@ -78,7 +82,7 @@ function parseUntil(str, stack) {
 function parseTag(str, stack) {
 	var idxTagEnd = str.indexOf(tagEnd);
 	var idxSpace = str.indexOf(' ');
-	var tagNameEnd = ~idxSpace 
+	var tagNameEnd = ~idxSpace
 		? Math.min(idxTagEnd, idxSpace)
 		: idxTagEnd;
 	var tagName = str.slice(1, tagNameEnd);
@@ -99,7 +103,7 @@ function parseTag(str, stack) {
 		str = str.slice(2);
 	} else {
 		str = str.slice(1);
-		
+
 		if(~childlessTags.indexOf(lowTagName)) {
 			var end = '</'+tagName+'>';
 			var idx = str.indexOf(end);
@@ -226,10 +230,22 @@ function startsWithDataDash(s) {
 		s.charAt(4) === '-');
 }
 
-module.exports = {
-	parse: parse,
-	parseTag: parseTag,
+var himalaya = {
+  parse: parse,
+  parseTag: parseTag,
 	parseUntil: parseUntil,
 	parseAttrs: parseAttrs,
-	parseStyle: parseStyle,
+	parseStyle: parseStyle
+};
+
+if(typeof exports !== 'undefined') {
+  if(typeof module !== 'undefined' && module.exports) {
+    exports = module.exports = himalaya;
+  }
+  exports.himalaya = himalaya;
+} else {
+  root.himalaya = himalaya;
 }
+
+}).call(this);
+
