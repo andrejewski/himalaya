@@ -154,26 +154,48 @@ function splitHead(str, sep) {
 }
 
 function tagPairs(str) {
-	var parts = [];
-	var start = 0;
-	var finish = 0;
-	var quote = null;
-	for(var i = start; i < str.length; i++) {
-		var c = str.charAt(i);
-		if(!quote && (c === '/' || c === tagEnd)) {
-			if(start !== i) parts.push(str.slice(start, i));
-			finish = i;
-			break;
-		} else if(c === ' ' && !quote) {
-			parts.push(str.slice(start, i));
-			start = i + 1;
-		} else if(c === quote) {
-			quote = null;
-		} else if(!quote && (c === '"' || c === "'")) {
-			quote = c;
-		}
-	}
-	return {kvs: parts, str: str.slice(finish)};
+  function _tagPairs(str) {
+    var parts = [];
+    var start = 0;
+    var finish = 0;
+    var quote = null;
+    for(var i = start; i < str.length; i++) {
+      var c = str.charAt(i);
+      if(!quote && (c === '/' || c === tagEnd)) {
+        if(start !== i) parts.push(str.slice(start, i));
+        finish = i;
+        break;
+      } else if(c === ' ' && !quote) {
+        parts.push(str.slice(start, i));
+        start = i + 1;
+      } else if(c === quote) {
+        quote = null;
+      } else if(!quote && (c === '"' || c === "'")) {
+        quote = c;
+      }
+    }
+    return {kvs: parts, str: str.slice(finish)};
+  }
+
+  var result = _tagPairs(str);
+  var list = result.kvs.filter(function(x) { return x; });
+  var len = list.length;
+  var kvs = [];
+  for(var idx = 0; idx < len; idx++) {
+    var val = list[idx];
+    if(val.indexOf('=') === -1) {
+      var second = list[idx + 1];
+      var third  = list[idx + 2];
+      if(second === '=' && third) {
+        idx += 2;
+        kvs.push(val + '=' + third);
+        continue;
+      }
+    }
+    kvs.push(val);
+  }
+  result.kvs = kvs;
+  return result;
 }
 
 function unquote(str) {

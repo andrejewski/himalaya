@@ -200,6 +200,25 @@ describe('html-parser', function() {
 				};
 				assert.deepEqual(data, h.parseAttrs(text).attributes);
 			});
+
+      it('should handle attributes with no quotes', function() {
+        var text = ' dumb = little stupid=quirks>...';
+        var data = {
+          dumb: 'little',
+          stupid: 'quirks'
+        };
+        assert.deepEqual(data, h.parseAttrs(text).attributes);
+      });
+
+      it('should handle attributes with whitespace between the equals (=)', function() {
+        var text = ' dumb  =   "stuff" please    = no>...';
+        var data = {
+          dumb: 'stuff',
+          please: 'no'
+        };
+        assert.deepEqual(data, h.parseAttrs(text).attributes);
+      });
+
 			it('should group all data-* in the `dataset` Object', function() {
 				var text = ' data-attr=0 data-name="Chris" type="text" disabled >...';
 				var data = h.parseAttrs(text).attributes;
