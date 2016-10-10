@@ -4,12 +4,13 @@ This document describes the functions included with the Himalaya parser for tran
 
 The language translations currently included are for HTML and [Jade](http://jade-lang.com/).
 
-All translation functions are used by requiring the `translate` module. 
+All translation functions are used by requiring the `translate` module.
 
 ```js
 var translate = require('himalaya/translate');
 var toHTML = translate.toHTML;
 var toJade = translate.toJade;
+var toPug = translate.toPug; // alias for toJade() currently
 ```
 
 This module is separated from the core parsing module because developers may only need one or the other. Build tools like Browserify would package both otherwise. Also this provides greater flexibility as these functions may be eventually moved to their own packages.
