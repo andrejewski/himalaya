@@ -133,8 +133,9 @@
   }
 
   function parseAttrs(str) {
-    var results = tagPairs(str.trim());
-    var str = results.str;
+    str = str.trim();
+    var results = tagPairs(str, 0);
+    str = str.slice(results.cursor);
     var attributes = results.kvs.map(function(pair) {
       var kv = splitHead(pair.trim(), '=');
       kv[1] = kv[1] ? unquote(kv[1]) : kv[0];
@@ -167,54 +168,73 @@
     return [str.slice(0, idx), str.slice(idx + sep.length)];
   }
 
-  function tagPairs(str) {
-    function _tagPairs(str) {
-      var parts = [];
-      var start = 0;
-      var finish = 0;
-      var quote = null;
-      for (var i = start; i < str.length; i++) {
-        var c = str.charAt(i);
-        if (!quote && (c === '/' || c === tagEnd)) {
-          if (start !== i) parts.push(str.slice(start, i));
-          finish = i;
-          break;
-        } else if (c === ' ' && !quote) {
-          parts.push(str.slice(start, i));
-          start = i + 1;
-        } else if (c === quote) {
-          quote = null;
-        } else if (!quote && (c === '"' || c === "'")) {
-          quote = c;
+  function tagPairs(str, index) {
+    var words = []; // "key", "key=value", "key='value'", etc
+    var quote = null; // null, single-, or double-quote
+    var cursor = index; // index of parse into str
+    var wordBegin = cursor; // index of word start
+    var len = str.length;
+    while(cursor < len) {
+      var char = str.charAt(cursor);
+      var isTagEnd = !quote && (char === '/' || char === tagEnd);
+      if (isTagEnd) {
+        if (cursor !== wordBegin) {
+          words.push(str.slice(wordBegin, cursor));
         }
+        break;
       }
-      return {
-        kvs: parts,
-        str: str.slice(finish)
-      };
+
+      var isWordEnd = !quote && char === ' ';
+      if (isWordEnd) {
+        if (cursor !== wordBegin) {
+          words.push(str.slice(wordBegin, cursor));
+        }
+        wordBegin = cursor + 1;
+        cursor++;
+        continue;
+      }
+
+      var isQuoteEnd = char === quote;
+      if (isQuoteEnd) {
+        quote = null;
+        cursor++;
+        continue;
+      }
+
+      var isQuoteStart = !quote && (char === '\'' || char === '"');
+      if (isQuoteStart) {
+        quote = char;
+        cursor++;
+        continue;
+      }
+
+      cursor++;
     }
 
-    var result = _tagPairs(str);
-    var list = result.kvs.filter(function(x) {
-      return x;
-    });
-    var len = list.length;
-    var kvs = [];
-    for (var idx = 0; idx < len; idx++) {
-      var val = list[idx];
-      if (val.indexOf('=') === -1) {
-        var second = list[idx + 1];
-        var third = list[idx + 2];
-        if (second === '=' && third) {
-          idx += 2;
-          kvs.push(val + '=' + third);
+    var attrs = [];
+    var wLen = words.length;
+    for (var i = 0; i < wLen; i++) {
+      var word = words[i];
+      if (!(word && word.length)) continue;
+      var isNotPair = word.indexOf('=') === -1;
+      if (isNotPair) {
+        var secondWord = words[i + 1];
+        var thirdWord = words[i + 2];
+        var isSpacedPair = secondWord === '=' && thirdWord;
+        if (isSpacedPair) {
+          var newWord = word + '=' + thirdWord;
+          attrs.push(newWord);
+          i += 2;
           continue;
         }
       }
-      kvs.push(val);
+      attrs.push(word);
     }
-    result.kvs = kvs;
-    return result;
+
+    return {
+      cursor: cursor,
+      kvs: attrs
+    };
   }
 
   function unquote(str) {
