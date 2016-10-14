@@ -21,59 +21,66 @@
     return parseUntil(str + '</root>', ['root']).nodes;
   }
 
-  function Node(kind, data) {
-    data.type = kind;
-    return data;
-  }
-
   function parseUntil(str, stack) {
     var nodes = [];
 
     while (str.length) {
       var nextTag = str.indexOf(tagStart);
-      if (!~nextTag) {
+      if (nextTag === -1) {
         // only text left
-        nodes.push(Node('Text', {
+        nodes.push({
+          type: 'Text',
           content: str
-        }));
-        str = "";
-      } else if (nextTag) {
+        });
+        str = '';
+        break;
+      }
+
+      if (nextTag) {
         // text before tag
-        nodes.push(Node('Text', {
+        nodes.push({
+          type: 'Text',
           content: str.slice(0, nextTag)
-        }));
+        });
         str = str.slice(nextTag);
-      } else {
-        if (startsWithCommentStart(str)) {
-          // comment
-          var end = str.indexOf(commentEnd);
-          nodes.push(Node('Comment', {
-            content: str.slice(commentStart.length, end)
-          }));
-          str = str.slice(end + commentEnd.length);
-        } else if (str.charAt(nextTag + 1) !== '/') {
-          // open tag
-          var results = parseTag(str, stack);
-          if (results.tag) {
-            nodes.push(Node('Element', results.tag));
-            str = results.str;
-          }
-          if (results.stack.length !== stack.length) {
-            stack = results.stack;
-            break;
-          }
-        } else {
-          // close tag
-          var endTagEnd = str.indexOf(tagEnd);
-          var tagName = str.slice(2, endTagEnd)
-            .trim().split(' ')[0];
-          str = str.slice(endTagEnd + 1);
-          var loc = stack.lastIndexOf(tagName);
-          if (~loc) {
-            stack = stack.slice(0, loc);
-            break;
-          }
+        continue;
+      }
+
+      if (startsWithCommentStart(str)) {
+        // comment
+        var end = str.indexOf(commentEnd);
+        nodes.push({
+          type: 'Comment',
+          content: str.slice(commentStart.length, end)
+        });
+        str = str.slice(end + commentEnd.length);
+        continue;
+      }
+
+      var isClosingTag = str.charAt(nextTag + 1) === '/';
+      if (isClosingTag) {
+        var endTagEnd = str.indexOf(tagEnd);
+        var innerTag = str.slice(2, endTagEnd);
+        var tagName = innerTag.trim().split(' ')[0];
+        str = str.slice(endTagEnd + 1);
+        var loc = stack.lastIndexOf(tagName);
+        if (~loc) {
+          stack = stack.slice(0, loc);
+          break;
         }
+        continue;
+      }
+
+      // open tag
+      var results = parseTag(str, stack);
+      if (results.tag) {
+        results.tag.type = 'Element';
+        nodes.push(results.tag);
+        str = results.str;
+      }
+      if (results.stack.length !== stack.length) {
+        stack = results.stack;
+        break;
       }
     }
 
@@ -164,7 +171,7 @@
 
   function splitHead(str, sep) {
     var idx = str.indexOf(sep);
-    if (!~idx) return [str];
+    if (idx === -1) return [str];
     return [str.slice(0, idx), str.slice(idx + sep.length)];
   }
 
