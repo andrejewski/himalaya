@@ -36,6 +36,11 @@ describe('translations', function() {
       assert.equal(toHTML(himalaya.parse(elem)), elem);
     });
 
+    it('should do basic escaping if a value contains either single or double quotes', function() {
+      var html = '<div data-val="cake is \'good\'"></div>';
+      assert.equal(toHTML(himalaya.parse(html)), html);
+    });
+
     it('should preserve whitespace', function() {
       var html = [
         "<html>    ",
@@ -141,6 +146,11 @@ describe('translations', function() {
     it('should write data-* attributes', function() {
       var html = "<div data-one='5' data-two='five'></div>";
       var jade = "div(data-one='5', data-two='five')";
+      assert.equal(toJade(himalaya.parse(html)), jade);
+    });
+    it('should do basic escaping if a value contains either single or double quotes', function() {
+      var html = '<div data-val="cake is \'good\'"></div>';
+      var jade = 'div(data-val="cake is \'good\'")';
       assert.equal(toJade(himalaya.parse(html)), jade);
     });
     it('should write the style attribute', function() {

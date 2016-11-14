@@ -9,9 +9,10 @@ var voidTags = [
 
 function serializeAttr(attr, value, isXml) {
   if (!isXml && attr === value) return attr;
-  var quote = typeof value === 'string' && ~value.indexOf('"') ?
-    '"' : "'";
-  return attr + '=' + quote + value + quote;
+  var text = value.toString();
+  var quoteEscape = text.indexOf('\'') !== -1;
+  var quote = quoteEscape ? '\"' : '\'';
+  return attr + '=' + quote + text + quote;
 }
 
 // stolen from underscore.string
