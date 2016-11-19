@@ -1,4 +1,4 @@
-# Himalaya AST Specification
+# Himalaya AST Specification - Version 0
 
 This document describes the abstract syntax tree output of Himalaya's parsing. This specification aims to provide context as to what may be expected as valid output from Himalaya.
 
@@ -18,7 +18,7 @@ enum Type {
 }
 ```
 
-Nodes can be of `type`: 
+Nodes can be of `type`:
 
 - `Element`, which are tags such as `<body>`, `<div>`, `<style>`
 
@@ -40,7 +40,7 @@ All element nodes have a `tagName` and `attributes` property. These nodes also h
 
 - `children: [ Node ];` Element nodes can have child nodes of any type.
 
-- `content: string;` Elements that do not have their contents parsed (i.e. `script` and `style` tags) will have their content placed in this property. 
+- `content: string;` Elements that do not have their contents parsed (i.e. `script` and `style` tags) will have their content placed in this property.
 
 ### Attributes
 

@@ -3,7 +3,10 @@ import parser from '../lib/parser'
 import lexer from '../lib/lexer'
 
 const lexerOptions = {childlessTags: []}
-const parserOptions = {voidTags: []}
+const parserOptions = {
+  voidTags: [],
+  closingTags: []
+}
 
 test('parser() should return nodes', t => {
   const str = '<h1>Hello world</h1>'
@@ -23,7 +26,7 @@ test('parser() should return nodes', t => {
 test('parser() should not nest within void tags', t => {
   const str = '<div>abc<img/>def</div>'
   const tokens = lexer(str, lexerOptions)
-  const nodes = parser(tokens, {voidTags: 'img'})
+  const nodes = parser(tokens, {voidTags: 'img', closingTags: []})
   t.deepEqual(nodes, [{
     type: 'element',
     tagName: 'div',
@@ -39,6 +42,33 @@ test('parser() should not nest within void tags', t => {
     }, {
       type: 'text',
       content: 'def'
+    }]
+  }])
+})
+
+test('parser() should handle optional-close tags', t => {
+  const parserOptions = {
+    voidTags: [],
+    closingTags: ['p']
+  }
+  const str = '<p>This is one<p>This is two</p>'
+  const tokens = lexer(str, lexerOptions)
+  const nodes = parser(tokens, parserOptions)
+  t.deepEqual(nodes, [{
+    type: 'element',
+    tagName: 'p',
+    attributes: [],
+    children: [{
+      type: 'text',
+      content: 'This is one'
+    }]
+  }, {
+    type: 'element',
+    tagName: 'p',
+    attributes: [],
+    children: [{
+      type: 'text',
+      content: 'This is two'
     }]
   }])
 })

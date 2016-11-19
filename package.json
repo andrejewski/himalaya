@@ -2,7 +2,7 @@
   "name": "himalaya",
   "version": "0.2.2",
   "description": "HTML to JSON parser",
-  "main": "index.js",
+  "main": "lib/index.js",
   "bin": {
     "himalaya": "./bin/himalaya.js"
   },

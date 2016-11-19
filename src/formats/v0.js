@@ -1,13 +1,13 @@
-export default function formatter (nodes, options) {
-  return format(nodes)
-}
+/*
+  This format adheres to the v0 ASP spec.
+*/
 
-export function format (nodes) {
+export default function format (nodes) {
   return nodes.map(node => {
     const type = capitialize(node.type)
     if (type === 'Element') {
       const tagName = node.tagName.toLowerCase()
-      const attributes = commonAttributes(node.attributes)
+      const attributes = formatAttributes(node.attributes)
       const children = format(node.children)
       return {type, tagName, attributes, children}
     }
@@ -48,17 +48,15 @@ function splitHead (str, sep) {
   return [str.slice(0, idx), str.slice(idx + sep.length)]
 }
 
-export function commonAttributes (attributes) {
+export function formatAttributes (attributes) {
   return attributes.reduce((attrs, pair) => {
     let [key, value] = splitHead(pair.trim(), '=')
     value = value ? unquote(value) : key
     if (key === 'class') {
       attrs.className = value.split(' ')
-    }
-    if (key === 'style') {
-      attrs.style = commonStyles(value)
-    }
-    if (key.startsWith('data-')) {
+    } else if (key === 'style') {
+      attrs.style = formatStyles(value)
+    } else if (key.startsWith('data-')) {
       attrs.dataset = attrs.dataset || {}
       const prop = camelCase(key.slice(5))
       attrs.dataset[prop] = castValue(value)
@@ -69,7 +67,7 @@ export function commonAttributes (attributes) {
   }, {})
 }
 
-export function commonStyles (str) {
+export function formatStyles (str) {
   return str.trim().split(';')
     .map(rule => rule.trim().split(':'))
     .reduce((styles, keyValue) => {
