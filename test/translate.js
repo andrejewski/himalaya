@@ -1,7 +1,7 @@
 import test from 'ava'
-const himalaya = require('../lib')
-const translations = require('../translate')
-const {toHTML, toJade, toPug} = translations
+import himalaya from '../lib'
+import translate from '../lib/translate'
+const {toHTML, toJade, toPug} = translate
 
 test('toHTML() should handle simple conversions', t => {
   const str1 = '<h1>Text</h1>'
@@ -32,10 +32,10 @@ test('toHTML() should build the style attribute properly', t => {
   t.is(toHTML(himalaya.parse(elem)), elem)
 })
 
-// test('toHTML() should do basic escaping if a value contains either single or double quotes', t => {
-//   const html = '<div data-val="cake is \'good\'"></div>'
-//   t.is(toHTML(himalaya.parse(html)), html)
-// })
+test('toHTML() should do basic escaping if a value contains either single or double quotes', t => {
+  const html = '<div data-val="cake is \'good\'"></div>'
+  t.is(toHTML(himalaya.parse(html)), html)
+})
 
 test('toHTML() should preserve whitespace', t => {
   const html = [
@@ -151,11 +151,11 @@ test('toJade() should write data-* attributes', t => {
   t.is(toJade(himalaya.parse(html)), jade)
 })
 
-// test('toJade() should do basic escaping if a value contains either single or double quotes', t => {
-//   const html = '<div data-val="cake is \'good\'"></div>'
-//   const jade = 'div(data-val="cake is \'good\'")'
-//   t.is(toJade(himalaya.parse(html)), jade)
-// })
+test('toJade() should do basic escaping if a value contains either single or double quotes', t => {
+  const html = '<div data-val="cake is \'good\'"></div>'
+  const jade = 'div(data-val="cake is \'good\'")'
+  t.is(toJade(himalaya.parse(html)), jade)
+})
 
 test('toJade() should write the style attribute', t => {
   const html = "<b style='font-weight: bold; font-style: italics'>Word</b>"
