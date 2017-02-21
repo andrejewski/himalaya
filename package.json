@@ -1,31 +1,17 @@
 {
   "name": "himalaya",
-  "version": "0.2.2",
   "description": "HTML to JSON parser",
-  "main": "lib/index.js",
+  "version": "0.2.3",
+  "author": "Chris Andrejewski <christopher.andrejewski@gmail.com>",
   "bin": {
     "himalaya": "./bin/himalaya.js"
   },
-  "scripts": {
-    "test": "gulp --silent && ava",
-    "himalaya": "./bin/himalaya.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/andrejewski/himalaya.git"
-  },
-  "keywords": [
-    "html",
-    "parser",
-    "ast",
-    "json"
-  ],
-  "author": "Chris Andrejewski <christopher.andrejewski@gmail.com>",
-  "license": "ISC",
   "bugs": {
     "url": "https://github.com/andrejewski/himalaya/issues"
   },
-  "homepage": "https://github.com/andrejewski/himalaya",
+  "dependencies": {
+    "paul": "0.0.3"
+  },
   "devDependencies": {
     "ava": "^0.16.0",
     "babel-polyfill": "^6.16.0",
@@ -39,7 +25,22 @@
     "source-map-support": "^0.4.3",
     "standard": "^8.4.0"
   },
-  "dependencies": {
-    "paul": "0.0.3"
+  "homepage": "https://github.com/andrejewski/himalaya",
+  "keywords": [
+    "ast",
+    "html",
+    "json",
+    "parser"
+  ],
+  "license": "ISC",
+  "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andrejewski/himalaya.git"
+  },
+  "scripts": {
+    "himalaya": "./bin/himalaya.js",
+    "prepublish": "standard --fix && fixpack && npm run test",
+    "test": "gulp --silent && ava"
   }
 }

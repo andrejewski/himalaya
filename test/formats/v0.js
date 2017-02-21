@@ -1,5 +1,12 @@
 import test from 'ava'
-import {formatStyles} from '../../lib/formats/v0'
+import {castValue, formatStyles} from '../../lib/formats/v0'
+
+test('castValue() should return a number if the text is only a number', t => {
+  t.is(castValue('12'), 12)
+  t.is(castValue(''), '')
+  t.is(castValue('this has a 12'), 'this has a 12')
+  t.is(castValue('1abc'), '1abc')
+})
 
 test('formatStyles() should return an hashmap of style declarations', t => {
   var style = 'color: #000; height: 80px'

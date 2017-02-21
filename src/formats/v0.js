@@ -16,24 +16,25 @@ export default function format (nodes) {
   })
 }
 
-function capitialize (str) {
+export function capitialize (str) {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
-function camelCase (str) {
+export function camelCase (str) {
   return str.split('-').reduce((str, word) => {
     return str + word.charAt(0).toUpperCase() + word.slice(1)
   })
 }
 
-function castValue (str) {
+export function castValue (str) {
   if (typeof str !== 'string') return str
+  if (str === '') return str
   const num = +str
   if (!isNaN(num)) return num
   return str
 }
 
-function unquote (str) {
+export function unquote (str) {
   const car = str.charAt(0)
   const end = str.length - 1
   if (car === '"' || car === "'" && car === str.charAt(end)) {
@@ -42,7 +43,7 @@ function unquote (str) {
   return str
 }
 
-function splitHead (str, sep) {
+export function splitHead (str, sep) {
   const idx = str.indexOf(sep)
   if (idx === -1) return [str]
   return [str.slice(0, idx), str.slice(idx + sep.length)]

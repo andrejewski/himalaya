@@ -131,3 +131,14 @@ test('should work on unclosed tags', t => {
   }]
   t.deepEqual(data, himalaya.parse(html))
 })
+
+test('should not set custom attrs to zeroes', t => {
+  const html = "<div custom-attr=''></div>"
+  const data = [{
+    type: 'Element',
+    tagName: 'div',
+    attributes: {customAttr: ''},
+    children: []
+  }]
+  t.deepEqual(data, himalaya.parse(html))
+})
