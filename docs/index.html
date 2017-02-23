@@ -1,0 +1,120 @@
+<html>
+  <head>
+    <title>Himalaya</title>
+    <style>
+      * {
+        font-family: monospace;
+      }
+
+      .page {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+
+        display: flex;
+        flex-direction: column;
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        padding: 20px 20px 0;
+      }
+
+      header h1 {
+        margin: 0;
+        padding-right: 10px;
+      }
+
+      header a {
+        color: #08f;
+        text-decoration: none;
+        padding: 0px 10px;
+      }
+
+      header a:hover {
+        text-decoration: underline;
+      }
+
+      .converter {
+        display: flex;
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .pane {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        align-self: stretch;
+        padding: 20px;
+        font-size: 1em;
+        border: none;
+        margin: 0px;
+        outline: none;
+        overflow: auto;
+      }
+
+      .pane label {
+        display: block;
+        text-transform: uppercase;
+        color: #555;
+        margin-bottom: 5px;
+      }
+
+      #source {
+        flex: 1;
+        display: flex;
+        align-self: stretch;
+        border: none;
+        background-color: transparent;
+        outline: none;
+        padding: 0px;
+        font-size: inherit;
+      }
+
+      #output {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class='page'>
+      <header>
+        <h1>Himalaya</h1>
+        <a href='https://github.com/andrejewski/himalaya'>on Github</a>
+        <a href='http://chrisandrejewski.com'>by Chris Andrejewski</a>
+      </header>
+      <div class='converter'>
+        <div class='pane pane-source'>
+          <label>html</label>
+          <textarea id='source' placeholder='<div>HTML to transform</div>'></textarea>
+        </div>
+        <div class='pane pane-output'>
+          <label>json (ast)</label>
+          <pre id='output'></pre>
+        </div>
+      </div>
+    </div>
+
+    <script src='dist/bundle.js'></script>
+    <script>
+      function $ (selector) {
+        return document.querySelector(selector)
+      }
+
+      function updateOutput () {
+        var html = $('#source').value || ''
+        var code = himalaya.parse(html)
+        $('#output').innerText = JSON.stringify(code, null, 2)
+      }
+
+      $('#source').onkeyup = updateOutput
+      updateOutput()
+    </script>
+  </body>
+</html>

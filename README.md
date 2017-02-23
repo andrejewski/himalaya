@@ -9,9 +9,9 @@ npm install himalaya
 ## Usage
 
 ```js
-var himalaya = require('himalaya');
-var html = require('fs').readFileSync('/webpage.html');
-var json = himalaya.parse(html);
+var himalaya = require('himalaya')
+var html = require('fs').readFileSync('/webpage.html')
+var json = himalaya.parse(html)
 ```
 
 Installed globally, Himalaya can also be used from the command-line to convert HTML files to JSON files, or as a pipe transform.
@@ -26,7 +26,7 @@ Run `himalaya --help` for more information.
 
 ## Parser AST Specification
 
-Himalaya has a specification for its output. Essentially, everything is a node and can either be an `Element`, `Comment`, or `Text` node. The [full specification](https://github.com/andrejewski/himalaya/tree/master/docs/ast-spec.md) provides the complete details.
+Himalaya has a specification for its output. Essentially, everything is a node and can either be an `Element`, `Comment`, or `Text` node. The [full specification](https://github.com/andrejewski/himalaya/tree/master/text/ast-spec.md) provides the complete details.
 
 ### Example Input/Output
 
@@ -73,11 +73,11 @@ Himalaya has a specification for its output. Essentially, everything is a node a
 
 ## Features
 
-### Synchronous 
-HTML is turned into JSON, that's it. Himalaya is completely synchronous and does not require any complicated callbacks. 
+### Synchronous
+HTML is turned into JSON, that's it. Himalaya is synchronous and does not require any complicated callbacks.
 
 ### Parses Attributes
-Himalaya does a couple things when processing attributes:
+Himalaya does a couple transformations when processing attributes:
 - Camel-cases attribute names
 - Attributes without values are set to their names (i.e. `disabled` turns into `disabled="disabled"`)
 - Groups `data-*` attributes into a `dataset` object
@@ -97,31 +97,31 @@ Himalaya handles a lot of HTML's fringe cases, like:
 Himalaya does not cut corners and returns an accurate representation of the HTML supplied.
 
 ## Going back to HTML
-Himalaya provides translation functions that can take the Himalaya AST and output eqivalent HTML and Jade.
+Himalaya provides translation functions that can take the Himalaya AST and output HTML and Jade.
 
-The following example does absolutely nothing. It simply parses the HTML to JSON then parses the JSON back into HTML, which is the exact same as the original. (Of course if the original was malformed, Himalaya probably buffed out the kinks.)
+The following example does nothing. It parses the HTML to JSON then parses the JSON back into HTML, which is the exact same as the original. (Of course if the original is malformed, Himalaya probably buffed out the kinks.)
 
 ```js
-var fs = require('fs');
-var himalaya = require('himalaya');
-var toHTML = require('himalaya/translate').toHTML;
+var fs = require('fs')
+var himalaya = require('himalaya')
+var toHTML = require('himalaya/translate').toHTML
 
-var html = fs.readFileSync('/webpage.html');
-var json = himalaya.parse(html);
-fs.writeFileSync('/webpage.html', toHTML(json));
+var html = fs.readFileSync('/webpage.html')
+var json = himalaya.parse(html)
+fs.writeFileSync('/webpage.html', toHTML(json))
 ```
 
-The same can be done with [Jade](http://jade-lang.com/) using the `toJade` function of the same module. These functions have additional options which can be found in their [reference document for translations](https://github.com/andrejewski/himalaya/tree/master/docs/translation.md).
+The same can be done with [Jade](http://jade-lang.com/) using the `toJade` function of the same module. These functions have options which can be found in their [reference document for translations](https://github.com/andrejewski/himalaya/tree/master/text/translation.md).
 
 ## Why "Himalaya"?
 
 [First, my friends weren't very helpful.](https://twitter.com/compooter/status/597908517132042240) Except Josh, Josh had my back.
 
-While I was testing the parser, I threw a download of my Twitter homepage in and got a huge JSON blob out. My code editor Sublime Text has a mini-map and looking at it sideways the data looked like a never-ending mountain range. Also, "himalaya" has H, M, L in it.
+While I was testing the parser, I threw a download of my Twitter homepage in and got a giant JSON blob out. My code editor Sublime Text has a mini-map and looking at it sideways the data looked like a never-ending mountain range. Also, "himalaya" has H, M, L in it.
 
 ## Nerd Stuff
 
-My first implementation used look-ahead, found the matching closing tag, and then recursively parsed the inners until a tree was built. That was problematic. This implementation uses no look-ahead and instead uses a stack to keep track of nesting as the source string is cut away. When an end tag is found the stack it cut to match and then parsing picks up again at the higher level. 
+My first implementation used look-ahead, found the matching closing tag, and then recursively parsed the inners until a tree was built. That was problematic. This implementation uses no look-ahead and instead uses a stack to keep track of nesting as the source string is cut away. When an end tag is found the stack it cut to match and then parsing picks up again at the higher level.
 
 This parser was implemented without using any regular expressions. Since I wanted this to double as a learning resource, I wanted the code to be readable sans regexes.
 

@@ -41,4 +41,9 @@ function parse (str, options = parseDefaults) {
 }
 
 const lib = {parse, parseDefaults}
-module.exports = {default: lib, ...lib}
+
+if (typeof window === 'undefined') {
+  module.exports = {default: lib, ...lib}
+} else {
+  window.himalaya = lib
+}

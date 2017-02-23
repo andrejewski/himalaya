@@ -142,3 +142,43 @@ test('should not set custom attrs to zeroes', t => {
   }]
   t.deepEqual(data, himalaya.parse(html))
 })
+
+test('custom tags should appear in the ast', t => {
+  {
+    const html = '<result>Hello</result>'
+    const data = [{
+      type: 'Element',
+      tagName: 'result',
+      attributes: {},
+      children: [{
+        type: 'Text',
+        content: 'Hello'
+      }]
+    }]
+    t.deepEqual(data, himalaya.parse(html))
+  }
+
+  {
+    const html = `<div><h1>Hi there</h1><result></result></div>`
+    const data = [{
+      type: 'Element',
+      tagName: 'div',
+      attributes: {},
+      children: [{
+        type: 'Element',
+        tagName: 'h1',
+        attributes: {},
+        children: [{
+          type: 'Text',
+          content: 'Hi there'
+        }]
+      }, {
+        type: 'Element',
+        tagName: 'result',
+        attributes: {},
+        children: []
+      }]
+    }]
+    t.deepEqual(data, himalaya.parse(html))
+  }
+})
