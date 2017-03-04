@@ -6,6 +6,8 @@ Himalaya is a pure JavaScript HTML parser that converts HTML into JSON, which ca
 npm install himalaya
 ```
 
+[![Build Status](https://travis-ci.org/andrejewski/himalaya.svg?branch=master)](https://travis-ci.org/andrejewski/himalaya)
+
 ## Usage
 
 ```js
