@@ -1,3 +1,5 @@
+import 'babel-polyfill'
+
 import lexer from './lexer'
 import parser from './parser'
 import format from './formats/v0'
