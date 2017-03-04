@@ -1,7 +1,7 @@
 {
   "name": "himalaya",
   "description": "HTML to JSON parser",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "author": "Chris Andrejewski <christopher.andrejewski@gmail.com>",
   "bin": {
     "himalaya": "./bin/himalaya.js"
