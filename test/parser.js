@@ -47,30 +47,67 @@ test('parser() should not nest within void tags', t => {
 })
 
 test('parser() should handle optional-close tags', t => {
-  const parserOptions = {
-    voidTags: [],
-    closingTags: ['p']
+  {
+    const parserOptions = {
+      voidTags: [],
+      closingTags: ['p']
+    }
+    const str = '<p>This is one<p>This is two</p>'
+    const tokens = lexer(str, lexerOptions)
+    const nodes = parser(tokens, parserOptions)
+    t.deepEqual(nodes, [{
+      type: 'element',
+      tagName: 'p',
+      attributes: [],
+      children: [{
+        type: 'text',
+        content: 'This is one'
+      }]
+    }, {
+      type: 'element',
+      tagName: 'p',
+      attributes: [],
+      children: [{
+        type: 'text',
+        content: 'This is two'
+      }]
+    }])
   }
-  const str = '<p>This is one<p>This is two</p>'
-  const tokens = lexer(str, lexerOptions)
-  const nodes = parser(tokens, parserOptions)
-  t.deepEqual(nodes, [{
-    type: 'element',
-    tagName: 'p',
-    attributes: [],
-    children: [{
-      type: 'text',
-      content: 'This is one'
-    }]
-  }, {
-    type: 'element',
-    tagName: 'p',
-    attributes: [],
-    children: [{
-      type: 'text',
-      content: 'This is two'
-    }]
-  }])
+
+  {
+    const parserOptions = {
+      voidTags: [],
+      closingTags: ['p', 'span']
+    }
+    const str = '<p>This is one <span>okay<p>This is two</p>'
+    const tokens = lexer(str, lexerOptions)
+    const nodes = parser(tokens, parserOptions)
+    t.deepEqual(nodes, [{
+      type: 'element',
+      tagName: 'p',
+      attributes: [],
+      children: [{
+        type: 'text',
+        content: 'This is one '
+      }, {
+        type: 'element',
+        tagName: 'span',
+        attributes: [],
+        children: [{
+          type: 'text',
+          content: 'okay'
+        }]
+      }]
+    }, {
+      type: 'element',
+      tagName: 'p',
+      attributes: [],
+      children: [{
+        type: 'text',
+        content: 'This is two'
+      }]
+    }])
+  }
 })
 
 test('parser() should handle empty token arrays', t => {

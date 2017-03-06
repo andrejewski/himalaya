@@ -43,13 +43,15 @@ export function parse (state) {
     if (options.closingTags.includes(tagName)) {
       // rewind the stack to just above the previous
       // closing tag of the same name
-      let len = stack.length
-      while (--len > -1) {
-        if (tagName === stack[len].tagName) {
-          stack = stack.slice(0, len)
-          nodes = stack[len - 1].children
+      let currentIndex = stack.length - 1
+      while (currentIndex > 0) {
+        if (tagName === stack[currentIndex].tagName) {
+          stack = stack.slice(0, currentIndex)
+          const previousIndex = currentIndex - 1
+          nodes = stack[previousIndex].children
           break
         }
+        currentIndex = currentIndex - 1
       }
     }
 

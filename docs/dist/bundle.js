@@ -7488,13 +7488,15 @@ function parse(state) {
     if (options.closingTags.includes(tagName)) {
       // rewind the stack to just above the previous
       // closing tag of the same name
-      var _len = stack.length;
-      while (--_len > -1) {
-        if (tagName === stack[_len].tagName) {
-          stack = stack.slice(0, _len);
-          nodes = stack[_len - 1].children;
+      var currentIndex = stack.length - 1;
+      while (currentIndex > 0) {
+        if (tagName === stack[currentIndex].tagName) {
+          stack = stack.slice(0, currentIndex);
+          var previousIndex = currentIndex - 1;
+          nodes = stack[previousIndex].children;
           break;
         }
+        currentIndex = currentIndex - 1;
       }
     }
 

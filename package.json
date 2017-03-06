@@ -3,14 +3,14 @@
   "description": "HTML to JSON parser",
   "version": "0.2.4",
   "author": "Chris Andrejewski <christopher.andrejewski@gmail.com>",
-  "bin": {
-    "himalaya": "./bin/himalaya.js"
-  },
   "ava": {
     "require": [
       "babel-register",
       "babel-polyfill"
     ]
+  },
+  "bin": {
+    "himalaya": "./bin/himalaya.js"
   },
   "bugs": {
     "url": "https://github.com/andrejewski/himalaya/issues"
