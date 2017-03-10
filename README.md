@@ -28,7 +28,7 @@ Run `himalaya --help` for more information.
 
 ## Parser AST Specification
 
-Himalaya has a specification for its output. Essentially, everything is a node and can either be an `Element`, `Comment`, or `Text` node. The [full specification](https://github.com/andrejewski/himalaya/tree/master/text/ast-spec.md) provides the complete details.
+Himalaya has a specification for its output. Essentially, everything is a node and can either be an `Element`, `Comment`, or `Text` node. The [full specification](https://github.com/andrejewski/himalaya/blob/master/text/ast-spec-v0.md) provides the complete details.
 
 ### Example Input/Output
 
@@ -123,9 +123,9 @@ While I was testing the parser, I threw a download of my Twitter homepage in and
 
 ## Nerd Stuff
 
-My first implementation used look-ahead, found the matching closing tag, and then recursively parsed the inners until a tree was built. That was problematic. This implementation uses no look-ahead and instead uses a stack to keep track of nesting as the source string is cut away. When an end tag is found the stack it cut to match and then parsing picks up again at the higher level.
+My first implementation used look-ahead, found the matching closing tag, and then recursively parsed the inners until a tree was built. That was problematic. This implementation uses no look-ahead and instead uses a stack to keep track of nesting as the source string is scanned. When an end tag is found the stack it cut to match and then parsing picks up again at the higher level.
 
-This parser was implemented without using any regular expressions. Since I wanted this to double as a learning resource, I wanted the code to be readable sans regexes.
+This parser runs without using any regular expressions. Since I wanted this to double as a learning resource, I wanted the code to be readable sans regexes.
 
 ## Contributing
 
