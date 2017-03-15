@@ -13,3 +13,5 @@ deploy:
     tags: true
     repo: andrejewski/himalaya
   skip_cleanup: true
+after_success:
+  - npm run coveralls

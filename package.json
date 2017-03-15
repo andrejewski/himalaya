@@ -40,12 +40,15 @@
     "babel-preset-stage-0": "^6.16.0",
     "babelify": "^7.3.0",
     "browserify": "^14.1.0",
+    "coveralls": "^2.12.0",
     "del": "^2.2.2",
     "fixpack": "^2.3.1",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-sourcemaps": "^2.1.1",
     "nyc": "^10.1.2",
+    "pre-commit": "^1.2.2",
+    "pre-push": "^0.1.1",
     "source-map-support": "^0.4.3",
     "standard": "^8.4.0",
     "vinyl-buffer": "^1.0.0",
@@ -74,12 +77,19 @@
       "text"
     ]
   },
+  "pre-commit": [
+    "prepublish"
+  ],
+  "pre-push": [
+    "prepublish"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/andrejewski/himalaya.git"
   },
   "scripts": {
     "build": "gulp build",
+    "coveralls": "nyc npm test && nyc report --reporter=text-lcov | coveralls",
     "himalaya": "./bin/himalaya.js",
     "prepublish": "standard --fix && fixpack && npm run test",
     "report": "NODE_ENV=nyc nyc npm test",
