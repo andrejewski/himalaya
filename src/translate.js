@@ -1,4 +1,8 @@
-const paul = require('paul')
+import paul from 'paul'
+import {
+  stringIncludes,
+  arrayIncludes
+} from './compat'
 
 // c/p'd from ../index.js
 const voidTags = [
@@ -65,7 +69,7 @@ function toHTML (tree, options = htmlDefaults) {
     }
 
     tag += '>'
-    const autoClose = !isXml && voidTags.includes(tagName.toLowerCase())
+    const autoClose = !isXml && arrayIncludes(voidTags, tagName.toLowerCase())
     if (autoClose) return tag
 
     const innerds = typeof content === 'string'
@@ -131,7 +135,7 @@ function toJade (tree, options = jadeDefaults) {
       tag += ')'
     }
     const lowTagName = node.tagName.toLowerCase()
-    if (voidTags.includes(lowTagName)) {
+    if (arrayIncludes(voidTags, lowTagName)) {
       if (lowTagName === '!doctype') {
         if (!doctype) doctype = doctypeShortcut(tag)
         return multi('doctype ' + doctype, depth)
@@ -162,7 +166,7 @@ function toJade (tree, options = jadeDefaults) {
 
 function multilineText (indentation) {
   let format = line => line
-  const hasTab = indentation.includes('\t')
+  const hasTab = stringIncludes(indentation, '\t')
   if (hasTab) {
     format = line => line.replace(/\t/g, indentation)
   }
@@ -195,12 +199,12 @@ function maxSharedIndent (lines) {
 
 // see http://jade-lang.com/reference/doctype/
 function doctypeShortcut (str) {
-  if (str.includes('Transitional')) return 'transitional'
-  if (str.includes('Strict')) return 'strict'
-  if (str.includes('Frameset')) return 'frameset'
-  if (str.includes('Basic')) return 'basic'
-  if (str.includes('1.1')) return '1.1'
-  if (str.includes('Mobile')) return 'mobile'
+  if (stringIncludes(str, 'Transitional')) return 'transitional'
+  if (stringIncludes(str, 'Strict')) return 'strict'
+  if (stringIncludes(str, 'Frameset')) return 'frameset'
+  if (stringIncludes(str, 'Basic')) return 'basic'
+  if (stringIncludes(str, '1.1')) return '1.1'
+  if (stringIncludes(str, 'Mobile')) return 'mobile'
   return 'html'
 }
 

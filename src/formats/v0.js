@@ -1,6 +1,7 @@
 /*
   This format adheres to the v0 ASP spec.
 */
+import {startsWith} from '../compat'
 
 export default function format (nodes) {
   return nodes.map(node => {
@@ -57,7 +58,7 @@ export function formatAttributes (attributes) {
       attrs.className = value.split(' ')
     } else if (key === 'style') {
       attrs.style = formatStyles(value)
-    } else if (key.startsWith('data-')) {
+    } else if (startsWith(key, 'data-')) {
       attrs.dataset = attrs.dataset || {}
       const prop = camelCase(key.slice(5))
       attrs.dataset[prop] = castValue(value)

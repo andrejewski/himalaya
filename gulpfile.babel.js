@@ -14,10 +14,6 @@ gulp.task('default', ['build'])
 
 gulp.task('build', ['cleanLib', 'buildSrc', 'buildDist'])
 
-gulp.task('watch', () => {
-  gulp.watch(['src/**'], ['build'])
-})
-
 gulp.task('cleanLib', () => {
   return del(['lib'], {force: true})
 })

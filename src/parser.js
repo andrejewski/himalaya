@@ -1,3 +1,5 @@
+import {arrayIncludes} from './compat'
+
 export default function parser (tokens, options) {
   const root = {tagName: null, children: []}
   const state = {tokens, options, cursor: 0, stack: [root]}
@@ -40,7 +42,7 @@ export function parse (state) {
       break
     }
 
-    if (options.closingTags.includes(tagName)) {
+    if (arrayIncludes(options.closingTags, tagName)) {
       // rewind the stack to just above the previous
       // closing tag of the same name
       let currentIndex = stack.length - 1
@@ -73,7 +75,7 @@ export function parse (state) {
       children
     })
 
-    const hasChildren = !(attrToken.close || options.voidTags.includes(tagName))
+    const hasChildren = !(attrToken.close || arrayIncludes(options.voidTags, tagName))
     if (hasChildren) {
       stack.push({tagName, children})
       const innerState = {tokens, options, cursor, stack}

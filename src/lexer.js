@@ -1,3 +1,10 @@
+import {
+  startsWith,
+  endsWith,
+  stringIncludes,
+  arrayIncludes
+} from './compat'
+
 export default function lexer (str, options) {
   const state = {str, options, cursor: 0, tokens: []}
   lex(state)
@@ -14,7 +21,7 @@ export function lex (state) {
       continue
     }
 
-    const isComment = str.startsWith('!--', state.cursor + 1)
+    const isComment = startsWith(str, '!--', state.cursor + 1)
     if (isComment) {
       lexComment(state)
       continue
@@ -24,7 +31,7 @@ export function lex (state) {
     if (tagName) {
       const safeTag = tagName.toLowerCase()
       const {childlessTags} = state.options
-      if (childlessTags.includes(safeTag)) {
+      if (arrayIncludes(childlessTags, safeTag)) {
         lexSkipTag(tagName, state)
       }
     }
@@ -167,7 +174,7 @@ export function lexTagAttributes (state) {
     const isNotPair = word.indexOf('=') === -1
     if (isNotPair) {
       const secondWord = words[i + 1]
-      if (secondWord && secondWord.startsWith('=')) {
+      if (secondWord && startsWith(secondWord, '=')) {
         if (secondWord.length > 1) {
           const newWord = word + secondWord
           tokens.push({type, content: newWord})
@@ -184,9 +191,9 @@ export function lexTagAttributes (state) {
         }
       }
     }
-    if (word.endsWith('=')) {
+    if (endsWith(word, '=')) {
       const secondWord = words[i + 1]
-      if (secondWord && !secondWord.includes('=')) {
+      if (secondWord && !stringIncludes(secondWord, '=')) {
         const newWord = word + secondWord
         tokens.push({type, content: newWord})
         i += 1

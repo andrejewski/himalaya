@@ -5,9 +5,15 @@
   "author": "Chris Andrejewski <christopher.andrejewski@gmail.com>",
   "ava": {
     "require": [
-      "babel-register",
-      "babel-polyfill"
+      "babel-register"
     ]
+  },
+  "babel": {
+    "presets": [
+      "es2015",
+      "stage-0"
+    ],
+    "plugins": []
   },
   "bin": {
     "himalaya": "./bin/himalaya.js"
@@ -16,11 +22,12 @@
     "url": "https://github.com/andrejewski/himalaya/issues"
   },
   "dependencies": {
-    "babel-polyfill": "^6.16.0",
     "paul": "0.0.3"
   },
   "devDependencies": {
     "ava": "^0.16.0",
+    "babel-core": "^6.24.0",
+    "babel-polyfill": "^6.23.0",
     "babel-preset-es2015": "^6.16.0",
     "babel-preset-stage-0": "^6.16.0",
     "babelify": "^7.3.0",
