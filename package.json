@@ -89,7 +89,7 @@
   },
   "scripts": {
     "build": "gulp build",
-    "coveralls": "nyc npm test && nyc report --reporter=text-lcov | coveralls",
+    "coveralls": "npm run report && nyc report --reporter=text-lcov | coveralls",
     "himalaya": "./bin/himalaya.js",
     "prepublish": "standard --fix && fixpack && npm run test",
     "report": "NODE_ENV=nyc nyc npm test",
