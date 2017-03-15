@@ -471,11 +471,6 @@ function lexSkipTag(tagName, state) {
 
     var tagState = { str: str, cursor: nextTag + 2, tokens: [] };
     var name = lexTagName(tagState);
-    if (!name) {
-      index = nextTag + 2;
-      continue;
-    }
-
     var safeTagName = tagName.toLowerCase();
     if (safeTagName !== name.toLowerCase()) {
       index = tagState.cursor;
@@ -528,12 +523,7 @@ function parse(state) {
       continue;
     }
 
-    cursor++;
-    var tagToken = tokens[cursor];
-    if (!tagToken || tagToken.type !== 'tag') {
-      continue;
-    }
-
+    var tagToken = tokens[++cursor];
     cursor++;
     var tagName = tagToken.content.toLowerCase();
     if (token.close) {

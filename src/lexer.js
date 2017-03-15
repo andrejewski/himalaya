@@ -222,11 +222,6 @@ export function lexSkipTag (tagName, state) {
 
     const tagState = {str, cursor: nextTag + 2, tokens: []}
     const name = lexTagName(tagState)
-    if (!name) {
-      index = nextTag + 2
-      continue
-    }
-
     const safeTagName = tagName.toLowerCase()
     if (safeTagName !== name.toLowerCase()) {
       index = tagState.cursor

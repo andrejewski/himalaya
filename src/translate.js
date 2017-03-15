@@ -44,11 +44,9 @@ function toHTML (tree, options = htmlDefaults) {
     if (type === 'Comment') return `<!--${content}-->`
     let tag = '<' + tagName
     for (const attr in attributes) {
-      if (!attributes.hasOwnProperty(attr)) continue
       const val = attributes[attr]
       if (attr === 'dataset') {
         for (const prop in val) {
-          if (!val.hasOwnProperty(prop)) continue
           const key = 'data-' + dasherize(prop)
           tag += ' ' + serializeAttr(key, val[prop], isXml)
         }
@@ -72,9 +70,7 @@ function toHTML (tree, options = htmlDefaults) {
     const autoClose = !isXml && arrayIncludes(voidTags, tagName.toLowerCase())
     if (autoClose) return tag
 
-    const innerds = typeof content === 'string'
-      ? content
-      : walk(node.children || []).join('')
+    const innerds = walk(node.children || []).join('')
     return tag + innerds + `</${tagName}>`
   })
   if (html.join) return html.join('')
@@ -143,12 +139,7 @@ function toJade (tree, options = jadeDefaults) {
       return tag
     }
 
-    const {content, children} = node
-    if (typeof content === 'string') {
-      if (!content) return tag
-      return tag + '.' + newline + multi(content, depth + 1)
-    }
-
+    const {children} = node
     if (!children.length) return tag
     if (children.length === 1 && children[0].type === 'Text') {
       const text = children[0].content
@@ -200,7 +191,7 @@ function maxSharedIndent (lines) {
 // see http://jade-lang.com/reference/doctype/
 function doctypeShortcut (str) {
   if (stringIncludes(str, 'Transitional')) return 'transitional'
-  if (stringIncludes(str, 'Strict')) return 'strict'
+  if (stringIncludes(str, 'strict')) return 'strict'
   if (stringIncludes(str, 'Frameset')) return 'frameset'
   if (stringIncludes(str, 'Basic')) return 'basic'
   if (stringIncludes(str, '1.1')) return '1.1'

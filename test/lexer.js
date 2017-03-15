@@ -156,6 +156,17 @@ test('lexTagName should tokenize the next tag name', t => {
   })
 })
 
+test('lexTagName should ignore leading not-tagname characters', t => {
+  const str = '>/ div'
+  const state = {str, cursor: 0, tokens: []}
+  lexTagName(state)
+  t.is(state.cursor, str.length)
+  t.deepEqual(state.tokens[0], {
+    type: 'tag',
+    content: 'div'
+  })
+})
+
 test('lexTagAttributes should tokenize attibutes until tag end', t => {
   const str = 'yes="no" maybe data-type="array">abcd'
   const finish = str.indexOf('>abcd')
@@ -183,6 +194,17 @@ test('lexTagAttributes should tokenize independent of whitespace', t => {
   ])
 })
 
+test('lexTagAttributes should handle an unset attribute name', t => {
+  const str = '<div foo= bar="baz"></div>'
+  const state = {str, cursor: 4, tokens: []}
+  lexTagAttributes(state)
+  t.is(state.cursor, str.indexOf('></div>'))
+  t.deepEqual(state.tokens, [
+    {type: 'attribute', content: 'foo'},
+    {type: 'attribute', content: 'bar="baz"'}
+  ])
+})
+
 test('lexSkipTag should tokenize as text until the matching tag name', t => {
   const str = 'abcd<test><h1>Test case</h1></test><x>'
   const finish = str.indexOf('<x>')
@@ -207,6 +229,29 @@ test('lexSkipTag should stop at the case-insensitive matching tag name', t => {
     {type: 'text', content: 'proving <???> the point'},
     {type: 'tag-start', close: true},
     {type: 'tag', content: 'TeSt'},
+    {type: 'tag-end', close: false}
+  ])
+})
+
+test('lexSkipTag should autoclose if the end tag is not found', t => {
+  const str = '<script>This never ends'
+  const state = {str, cursor: 8, tokens: []}
+  lexSkipTag('script', state)
+  t.is(state.cursor, str.length)
+  t.deepEqual(state.tokens, [
+    {type: 'text', content: 'This never ends'}
+  ])
+})
+
+test('lexSkipTag should handle finding a stray "</" [resilience]', t => {
+  const str = '<script>proving </nothing></script>'
+  const state = {str, cursor: 8, tokens: []}
+  lexSkipTag('script', state)
+  t.is(state.cursor, str.length)
+  t.deepEqual(state.tokens, [
+    {type: 'text', content: 'proving </nothing>'},
+    {type: 'tag-start', close: true},
+    {type: 'tag', content: 'script'},
     {type: 'tag-end', close: false}
   ])
 })

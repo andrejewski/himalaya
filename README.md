@@ -1,6 +1,6 @@
 # Himalaya
 
-Himalaya is a pure JavaScript HTML parser that converts HTML into JSON, which can then be further manipulated by other modules.
+A pure JavaScript HTML parser that converts HTML into JSON, which can then be further manipulated by other modules.
 
 ```bash
 npm install himalaya
@@ -15,9 +15,10 @@ npm install himalaya
 var himalaya = require('himalaya')
 var html = require('fs').readFileSync('/webpage.html')
 var json = himalaya.parse(html)
+console.log('👉', json)
 ```
 
-Installed globally, Himalaya can also be used from the command-line to convert HTML files to JSON files, or as a pipe transform.
+Installed globally, Himalaya includes a command-line tool to convert HTML files to JSON files, or as a pipe transform.
 
 ```bash
 himalaya webpage.html webpage.json
@@ -72,17 +73,17 @@ Himalaya has a specification for its output. Essentially, everything is a node a
 ]
 ```
 
-*Note:* Text nodes containing only whitespace were removed from the output for readability.
+*Note:* Text nodes consisting of whitespace are not shown for readability.
 
 ## Features
 
 ### Synchronous
-HTML is turned into JSON, that's it. Himalaya is synchronous and does not require any complicated callbacks.
+Himalaya transforms HTML into JSON, that's it. Himalaya is synchronous and does not require any complicated callbacks.
 
 ### Parses Attributes
 Himalaya does a couple transformations when processing attributes:
 - Camel-cases attribute names
-- Attributes without values are set to their names (i.e. `disabled` turns into `disabled="disabled"`)
+- Attributes without values use their names as values. For example, `disabled` turns into `disabled="disabled"`
 - Groups `data-*` attributes into a `dataset` object
 - Attempts to caste any value to a number if `!Nan`
 - Parses the `style` attribute into a hash map
@@ -102,7 +103,7 @@ Himalaya does not cut corners and returns an accurate representation of the HTML
 ## Going back to HTML
 Himalaya provides translation functions that can take the Himalaya AST and output HTML and Jade.
 
-The following example does nothing. It parses the HTML to JSON then parses the JSON back into HTML, which is the exact same as the original. (Of course if the original is malformed, Himalaya probably buffed out the kinks.)
+The following example does nothing. It parses the HTML to JSON then parses the JSON back into HTML, which is the exact same as the original. Himalaya does buff out the kinks of malformed originals.
 
 ```js
 var fs = require('fs')
@@ -114,17 +115,17 @@ var json = himalaya.parse(html)
 fs.writeFileSync('/webpage.html', toHTML(json))
 ```
 
-The same can be done with [Jade](http://jade-lang.com/) using the `toJade` function of the same module. These functions have options which can be found in their [reference document for translations](https://github.com/andrejewski/himalaya/tree/master/text/translation.md).
+Translation supports [Jade](http://jade-lang.com/)/[Pug](https://pugjs.org) using `toJade`/`toPug`. See the [reference document for translations](https://github.com/andrejewski/himalaya/tree/master/text/translation.md).
 
 ## Why "Himalaya"?
 
-[First, my friends weren't very helpful.](https://twitter.com/compooter/status/597908517132042240) Except Josh, Josh had my back.
+[First, my friends weren't helpful.](https://twitter.com/compooter/status/597908517132042240) Except Josh, Josh had my back.
 
 While I was testing the parser, I threw a download of my Twitter homepage in and got a giant JSON blob out. My code editor Sublime Text has a mini-map and looking at it sideways the data looked like a never-ending mountain range. Also, "himalaya" has H, M, L in it.
 
-## Nerd Stuff
+## Implementation
 
-My first implementation used look-ahead, found the matching closing tag, and then recursively parsed the inners until a tree was built. That was problematic. This implementation uses no look-ahead and instead uses a stack to keep track of nesting as the source string is scanned. When an end tag is found the stack it cut to match and then parsing picks up again at the higher level.
+My first implementation used look-ahead, found the matching closing tag, and then recursively parsed the inners until a tree results. That was problematic. This implementation uses no look-ahead and instead uses a stack to keep track of nesting while processing the source HTML. At an end tag the stack it cut to match and then parsing picks up again at the higher level.
 
 This parser runs without using any regular expressions. Since I wanted this to double as a learning resource, I wanted the code to be readable sans regexes.
 
@@ -134,4 +135,4 @@ We can always have more tests: if you find a bug, create an issue or be **fabulo
 
 Run tests with the `npm test` command.
 
-Follow me on [Twitter](https://twitter.com/compooter) for updates or just for the lolz and please check out my other [repositories](https://github.com/andrejewski) if I have earned it. I thank you for reading.
+Follow me on [Twitter](https://twitter.com/compooter) for updates or for the lolz and please check out my other [repositories](https://github.com/andrejewski) if I have earned it. I thank you for reading.

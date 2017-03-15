@@ -21,12 +21,7 @@ export function parse (state) {
       continue
     }
 
-    cursor++
-    const tagToken = tokens[cursor]
-    if (!tagToken || tagToken.type !== 'tag') {
-      continue
-    }
-
+    const tagToken = tokens[++cursor]
     cursor++
     const tagName = tagToken.content.toLowerCase()
     if (token.close) {

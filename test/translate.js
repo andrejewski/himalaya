@@ -22,6 +22,11 @@ test('toHTML() should work for void elements', t => {
   t.is(toHTML(himalaya.parse(link)), link)
 })
 
+test('toHTML() should build the class attribute properly', t => {
+  const elem = "<div class='foo bar baz'></div>"
+  t.is(toHTML(himalaya.parse(elem)), elem)
+})
+
 test('toHTML() should build data-* attributes properly', t => {
   const elem = "<div data-one='5' data-two='five'></div>"
   t.is(toHTML(himalaya.parse(elem)), elem)
@@ -35,6 +40,11 @@ test('toHTML() should build the style attribute properly', t => {
 test('toHTML() should do basic escaping if a value contains either single or double quotes', t => {
   const html = '<div data-val="cake is \'good\'"></div>'
   t.is(toHTML(himalaya.parse(html)), html)
+})
+
+test('toHTML() should handle receiving a single root node', t => {
+  const html = '<div><p>Words are words.</p></div>'
+  t.is(toHTML(himalaya.parse(html)[0]), html)
 })
 
 test('toHTML() should preserve whitespace', t => {
@@ -173,6 +183,13 @@ test('toJade() should appropriate place tag inner text', t => {
   t.is(toJade(himalaya.parse(htmlMultiline)), jadeMultiline)
 })
 
+test('toJade() should use tabs for indentation if configured', t => {
+  const html = '<h1>Hello\nWorld</h1>'
+  const jade = 'h1.\n\t\tHello\n\t\tWorld'
+  const jadeOptions = {indentation: '\t\t'}
+  t.is(toJade(himalaya.parse(html), jadeOptions), jade)
+})
+
 test('toJade() should work for script and style tags', t => {
   const htmlScript = "<script type='text/javascript'>console.log('yes');\nconsole.log('no');</script>"
   const jadeScript = "script(type='text/javascript').\n  console.log('yes');\n  console.log('no');"
@@ -181,6 +198,62 @@ test('toJade() should work for script and style tags', t => {
   const htmlStyle = '<style>\nh1 {color: #fff;}\n.text {font-size: 12px;}</style>'
   const jadeStyle = 'style.\n  h1 {color: #fff;}\n  .text {font-size: 12px;}'
   t.is(toJade(himalaya.parse(htmlStyle)), jadeStyle)
+})
+
+test('toJade() should handle receiving a single root node', t => {
+  const html = '<div><p>Words are words.</p></div>'
+  const jade = [
+    'div',
+    '  p Words are words.'
+  ].join('\n')
+  t.is(toJade(himalaya.parse(html)[0]), jade)
+})
+
+test('toJade() should work for void tags', t => {
+  const html = '<img src="cake.png"/>'
+  const jade = "img(src='cake.png')"
+  t.is(toJade(himalaya.parse(html)), jade)
+})
+
+test('toJade() should prioritize using a configured doctype', t => {
+  const html = '<!doctype html>'
+  const jade = 'doctype foobar'
+  const jadeOptions = {doctype: 'foobar', indentation: '  '}
+  t.is(toJade(himalaya.parse(html), jadeOptions), jade)
+})
+
+test('toJade() should produce proper shorthand doctypes', t => {
+  const cases = [
+    [
+      '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">',
+      'doctype transitional'
+    ],
+    [
+      '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">',
+      'doctype frameset'
+    ],
+    [
+      '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">',
+      'doctype strict'
+    ],
+    [
+      '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">',
+      'doctype basic'
+    ],
+    [
+      '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">',
+      'doctype 1.1'
+    ],
+    [
+      '<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.2//EN" "http://www.openmobilealliance.org/tech/DTD/xhtml-mobile12.dtd">',
+      'doctype mobile'
+    ],
+    ['<!doctype html>', 'doctype html']
+  ]
+
+  cases.forEach(([html, jade]) => {
+    t.is(toJade(himalaya.parse(html)), jade)
+  })
 })
 
 test('toPug() should be an alias for toJade(ast, options)', t => {
