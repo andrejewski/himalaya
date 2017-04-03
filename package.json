@@ -95,5 +95,10 @@
     "report": "NODE_ENV=nyc nyc npm test",
     "test": "gulp --silent && ava",
     "test-ci": "npm run prepublish"
+  },
+  "standard": {
+    "ignore": [
+      "/docs/dist/**"
+    ]
   }
 }

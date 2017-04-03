@@ -27,28 +27,17 @@ const voidTags = [
   'meta', 'param', 'source', 'track', 'wbr'
 ]
 
-const parseDefaults = {
+export const parseDefaults = {
   voidTags,
   closingTags,
   childlessTags,
   format // transform for v0 spec
 }
 
-function parse (str, options = parseDefaults) {
+export function parse (str, options = parseDefaults) {
   const tokens = lexer(str, options)
   const nodes = parser(tokens, options)
   return format(nodes, options)
 }
 
-const lib = {parse, parseDefaults}
-const pkg = {default: lib, ...lib}
-
-/* istanbul ignore next */
-if (typeof exports !== 'undefined') {
-  if (typeof module !== 'undefined' && module.exports) {
-    exports = module.exports = pkg
-  }
-  exports.himalaya = pkg
-} else {
-  window.himalaya = pkg
-}
+export default {parse, parseDefaults}
