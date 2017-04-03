@@ -182,15 +182,3 @@ test('custom tags should appear in the ast', t => {
     t.deepEqual(data, himalaya.parse(html))
   }
 })
-
-function uncachedRequire (filePath) {
-  delete require.cache[require.resolve(filePath)]
-  return require(filePath)
-}
-
-test('assign himalaya to window when it exists', t => {
-  global.window = {}
-  uncachedRequire('../lib/index')
-  t.truthy(window.himalaya)
-  delete global.window
-})

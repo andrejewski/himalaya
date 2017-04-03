@@ -41,9 +41,14 @@ function parse (str, options = parseDefaults) {
 }
 
 const lib = {parse, parseDefaults}
+const pkg = {default: lib, ...lib}
 
-if (typeof window === 'undefined') {
-  module.exports = {default: lib, ...lib}
+/* istanbul ignore next */
+if (typeof exports !== 'undefined') {
+  if (typeof module !== 'undefined' && module.exports) {
+    exports = module.exports = pkg
+  }
+  exports.himalaya = pkg
 } else {
-  window.himalaya = lib
+  window.himalaya = pkg
 }

@@ -214,11 +214,16 @@ function parse(str) {
 }
 
 var lib = { parse: parse, parseDefaults: parseDefaults };
+var pkg = _extends({ default: lib }, lib);
 
-if (typeof window === 'undefined') {
-  module.exports = _extends({ default: lib }, lib);
+/* istanbul ignore next */
+if (typeof exports !== 'undefined') {
+  if (typeof module !== 'undefined' && module.exports) {
+    exports = module.exports = pkg;
+  }
+  exports.himalaya = pkg;
 } else {
-  window.himalaya = lib;
+  window.himalaya = pkg;
 }
 
 },{"./formats/v0":2,"./lexer":4,"./parser":5}],4:[function(require,module,exports){
