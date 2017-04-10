@@ -1,5 +1,7 @@
 # Himalaya
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/andrejewski/himalaya.svg)](https://greenkeeper.io/)
+
 A pure JavaScript HTML parser that converts HTML into JSON, which can then be further manipulated by other modules.
 
 ```bash
