@@ -32,7 +32,7 @@
     "paul": "0.0.3"
   },
   "devDependencies": {
-    "ava": "^0.16.0",
+    "ava": "^0.19.1",
     "babel-core": "^6.24.0",
     "babel-plugin-istanbul": "^4.0.0",
     "babel-polyfill": "^6.23.0",
@@ -50,7 +50,7 @@
     "pre-commit": "^1.2.2",
     "pre-push": "^0.1.1",
     "source-map-support": "^0.4.3",
-    "standard": "^8.4.0",
+    "standard": "^10.0.1",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   },

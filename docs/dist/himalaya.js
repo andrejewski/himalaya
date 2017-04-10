@@ -109,7 +109,8 @@ function castValue(str) {
 function unquote(str) {
   var car = str.charAt(0);
   var end = str.length - 1;
-  if (car === '"' || car === "'" && car === str.charAt(end)) {
+  var isQuoteStart = car === '"' || car === "'";
+  if (isQuoteStart && car === str.charAt(end)) {
     return str.slice(1, end);
   }
   return str;

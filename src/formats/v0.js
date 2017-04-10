@@ -38,7 +38,8 @@ export function castValue (str) {
 export function unquote (str) {
   const car = str.charAt(0)
   const end = str.length - 1
-  if (car === '"' || car === "'" && car === str.charAt(end)) {
+  const isQuoteStart = car === '"' || car === "'"
+  if (isQuoteStart && car === str.charAt(end)) {
     return str.slice(1, end)
   }
   return str
