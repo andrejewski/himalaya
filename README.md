@@ -87,7 +87,7 @@ Himalaya does a couple transformations when processing attributes:
 - Camel-cases attribute names
 - Attributes without values use their names as values. For example, `disabled` turns into `disabled="disabled"`
 - Groups `data-*` attributes into a `dataset` object
-- Attempts to caste any value to a number if `!Nan`
+- Attempts to cast any value to a number if `!Nan`
 - Parses the `style` attribute into a hash map
 
 ### Handles Weirdness
