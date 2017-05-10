@@ -15,7 +15,7 @@ npm install himalaya
 
 ```js
 var himalaya = require('himalaya')
-var html = require('fs').readFileSync('/webpage.html')
+var html = require('fs').readFileSync('/webpage.html', {encoding: 'utf8'})
 var json = himalaya.parse(html)
 console.log('👉', json)
 ```
@@ -112,7 +112,7 @@ var fs = require('fs')
 var himalaya = require('himalaya')
 var toHTML = require('himalaya/translate').toHTML
 
-var html = fs.readFileSync('/webpage.html')
+var html = fs.readFileSync('/webpage.html', {encoding: 'utf8'})
 var json = himalaya.parse(html)
 fs.writeFileSync('/webpage.html', toHTML(json))
 ```
