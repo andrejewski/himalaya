@@ -5,7 +5,8 @@ import lexer from '../lib/lexer'
 const lexerOptions = {childlessTags: []}
 const parserOptions = {
   voidTags: [],
-  closingTags: []
+  closingTags: [],
+  closingTagAncestorBreakers: {}
 }
 
 test('parser() should return nodes', t => {
@@ -50,7 +51,8 @@ test('parser() should handle optional-close tags', t => {
   {
     const parserOptions = {
       voidTags: [],
-      closingTags: ['p']
+      closingTags: ['p'],
+      closingTagAncestorBreakers: {}
     }
     const str = '<p>This is one<p>This is two</p>'
     const tokens = lexer(str, lexerOptions)
@@ -77,7 +79,8 @@ test('parser() should handle optional-close tags', t => {
   {
     const parserOptions = {
       voidTags: [],
-      closingTags: ['p', 'span']
+      closingTags: ['p', 'span'],
+      closingTagAncestorBreakers: {}
     }
     const str = '<p>This is one <span>okay<p>This is two</p>'
     const tokens = lexer(str, lexerOptions)
@@ -174,5 +177,55 @@ test('parser() should match by case-insensitive tags', t => {
   }, {
     type: 'text',
     content: 'def'
+  }])
+})
+
+test('parser() should handle ancestor breaker special case (#39)', t => {
+  /*
+    To summarize, this special case is where a <ul|ol|menu> is
+    encountered within an <li>. The default behavior for <li>s
+    as closing tags is to rewind up and auto-close the previous
+    <li>. However, <li> may contain <ul|ol|menu> before being
+    closed so we should not rewind the stack in those cases.
+
+    This edge-case also applies to <dt|dd> in <dl>s.
+  */
+
+  const str = '<ul><li>abc<ul><li>def</li></ul></li></ul>'
+  const tokens = lexer(str, lexerOptions)
+  const nodes = parser(tokens, {
+    voidTags: [],
+    closingTags: ['li'],
+    closingTagAncestorBreakers: {
+      li: ['ul']
+    }
+  })
+
+  t.deepEqual(nodes, [{
+    type: 'element',
+    tagName: 'ul',
+    attributes: [],
+    children: [{
+      type: 'element',
+      tagName: 'li',
+      attributes: [],
+      children: [{
+        type: 'text',
+        content: 'abc'
+      }, {
+        type: 'element',
+        tagName: 'ul',
+        attributes: [],
+        children: [{
+          type: 'element',
+          tagName: 'li',
+          attributes: [],
+          children: [{
+            type: 'text',
+            content: 'def'
+          }]
+        }]
+      }]
+    }]
   }])
 })

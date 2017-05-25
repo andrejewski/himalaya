@@ -186,7 +186,7 @@ var _v2 = _interopRequireDefault(_v);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /*
-  Tags which contain arbitary non-parsed content
+  Tags which contain arbitrary non-parsed content
   For example: <script> JavaScript should not be parsed
 */
 var childlessTags = ['style', 'script', 'template'];
@@ -198,6 +198,19 @@ var childlessTags = ['style', 'script', 'template'];
 var closingTags = ['html', 'head', 'body', 'p', 'dt', 'dd', 'li', 'option', 'thead', 'th', 'tbody', 'tr', 'td', 'tfoot', 'colgroup'];
 
 /*
+  Closing tags which have ancestor tags which
+  may exist within them which prevent the
+  closing tag from auto-closing.
+  For example: in <li><ul><li></ul></li>,
+  the top-level <li> should not auto-close.
+*/
+var closingTagAncestorBreakers = {
+  li: ['ul', 'ol', 'menu'],
+  dt: ['dl'],
+  dd: ['dl']
+};
+
+/*
   Tags which do not need the closing tag
   For example: <img> does not need </img>
 */
@@ -206,6 +219,7 @@ var voidTags = ['!doctype', 'area', 'base', 'br', 'col', 'command', 'embed', 'hr
 var parseDefaults = exports.parseDefaults = {
   voidTags: voidTags,
   closingTags: closingTags,
+  closingTagAncestorBreakers: closingTagAncestorBreakers,
   childlessTags: childlessTags,
   format: _v2.default // transform for v0 spec
 };
@@ -494,6 +508,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = parser;
+exports.hasTerminalParent = hasTerminalParent;
 exports.parse = parse;
 
 var _compat = require('./compat');
@@ -503,6 +518,24 @@ function parser(tokens, options) {
   var state = { tokens: tokens, options: options, cursor: 0, stack: [root] };
   parse(state);
   return root.children;
+}
+
+function hasTerminalParent(tagName, stack, terminals) {
+  var tagParents = terminals[tagName];
+  if (tagParents) {
+    var currentIndex = stack.length - 1;
+    while (currentIndex >= 0) {
+      var parentTagName = stack[currentIndex].tagName;
+      if (parentTagName === tagName) {
+        break;
+      }
+      if ((0, _compat.arrayIncludes)(tagParents, parentTagName)) {
+        return true;
+      }
+      currentIndex--;
+    }
+  }
+  return false;
 }
 
 function parse(state) {
@@ -538,7 +571,15 @@ function parse(state) {
       break;
     }
 
-    if ((0, _compat.arrayIncludes)(options.closingTags, tagName)) {
+    var isClosingTag = (0, _compat.arrayIncludes)(options.closingTags, tagName);
+    var shouldRewindToAutoClose = isClosingTag;
+    if (shouldRewindToAutoClose) {
+      var terminals = options.closingTagAncestorBreakers;
+
+      shouldRewindToAutoClose = !hasTerminalParent(tagName, stack, terminals);
+    }
+
+    if (shouldRewindToAutoClose) {
       // rewind the stack to just above the previous
       // closing tag of the same name
       var currentIndex = stack.length - 1;

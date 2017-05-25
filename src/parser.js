@@ -7,6 +7,24 @@ export default function parser (tokens, options) {
   return root.children
 }
 
+export function hasTerminalParent (tagName, stack, terminals) {
+  const tagParents = terminals[tagName]
+  if (tagParents) {
+    let currentIndex = stack.length - 1
+    while (currentIndex >= 0) {
+      const parentTagName = stack[currentIndex].tagName
+      if (parentTagName === tagName) {
+        break
+      }
+      if (arrayIncludes(tagParents, parentTagName)) {
+        return true
+      }
+      currentIndex--
+    }
+  }
+  return false
+}
+
 export function parse (state) {
   const {tokens, options} = state
   let {stack} = state
@@ -37,7 +55,14 @@ export function parse (state) {
       break
     }
 
-    if (arrayIncludes(options.closingTags, tagName)) {
+    const isClosingTag = arrayIncludes(options.closingTags, tagName)
+    let shouldRewindToAutoClose = isClosingTag
+    if (shouldRewindToAutoClose) {
+      const { closingTagAncestorBreakers: terminals } = options
+      shouldRewindToAutoClose = !hasTerminalParent(tagName, stack, terminals)
+    }
+
+    if (shouldRewindToAutoClose) {
       // rewind the stack to just above the previous
       // closing tag of the same name
       let currentIndex = stack.length - 1

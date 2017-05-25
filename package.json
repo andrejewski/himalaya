@@ -91,9 +91,9 @@
     "build": "gulp build",
     "coveralls": "npm run report && nyc report --reporter=text-lcov | coveralls",
     "himalaya": "./bin/himalaya.js",
-    "prepublish": "standard --fix && fixpack && npm run test",
+    "prepublish": "npm test",
     "report": "NODE_ENV=nyc nyc npm test",
-    "test": "gulp --silent && ava",
+    "test": "fixpack && standard --fix && gulp --silent && ava",
     "test-ci": "npm run prepublish"
   },
   "standard": {

@@ -3,7 +3,7 @@ import parser from './parser'
 import format from './formats/v0'
 
 /*
-  Tags which contain arbitary non-parsed content
+  Tags which contain arbitrary non-parsed content
   For example: <script> JavaScript should not be parsed
 */
 const childlessTags = ['style', 'script', 'template']
@@ -18,6 +18,19 @@ const closingTags = [
 ]
 
 /*
+  Closing tags which have ancestor tags which
+  may exist within them which prevent the
+  closing tag from auto-closing.
+  For example: in <li><ul><li></ul></li>,
+  the top-level <li> should not auto-close.
+*/
+const closingTagAncestorBreakers = {
+  li: ['ul', 'ol', 'menu'],
+  dt: ['dl'],
+  dd: ['dl']
+}
+
+/*
   Tags which do not need the closing tag
   For example: <img> does not need </img>
 */
@@ -30,6 +43,7 @@ const voidTags = [
 export const parseDefaults = {
   voidTags,
   closingTags,
+  closingTagAncestorBreakers,
   childlessTags,
   format // transform for v0 spec
 }
