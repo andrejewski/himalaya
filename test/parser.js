@@ -191,41 +191,136 @@ test('parser() should handle ancestor breaker special case (#39)', t => {
     This edge-case also applies to <dt|dd> in <dl>s.
   */
 
-  const str = '<ul><li>abc<ul><li>def</li></ul></li></ul>'
-  const tokens = lexer(str, lexerOptions)
-  const nodes = parser(tokens, {
-    voidTags: [],
-    closingTags: ['li'],
-    closingTagAncestorBreakers: {
-      li: ['ul']
-    }
-  })
+  {
+    const str = '<ul><li>abc<ul><li>def</li></ul></li></ul>'
+    const tokens = lexer(str, lexerOptions)
+    const nodes = parser(tokens, {
+      voidTags: [],
+      closingTags: ['li'],
+      closingTagAncestorBreakers: {
+        li: ['ul']
+      }
+    })
 
-  t.deepEqual(nodes, [{
-    type: 'element',
-    tagName: 'ul',
-    attributes: [],
-    children: [{
+    t.deepEqual(nodes, [{
       type: 'element',
-      tagName: 'li',
+      tagName: 'ul',
       attributes: [],
       children: [{
-        type: 'text',
-        content: 'abc'
-      }, {
         type: 'element',
-        tagName: 'ul',
+        tagName: 'li',
         attributes: [],
         children: [{
+          type: 'text',
+          content: 'abc'
+        }, {
           type: 'element',
-          tagName: 'li',
+          tagName: 'ul',
           attributes: [],
           children: [{
-            type: 'text',
-            content: 'def'
+            type: 'element',
+            tagName: 'li',
+            attributes: [],
+            children: [{
+              type: 'text',
+              content: 'def'
+            }]
           }]
         }]
       }]
-    }]
-  }])
+    }])
+  }
+
+  {
+    const str = '<ul><li>abc<ul><span><li>def</li></span></ul></li></ul>'
+    const tokens = lexer(str, lexerOptions)
+    const nodes = parser(tokens, {
+      voidTags: [],
+      closingTags: ['li'],
+      closingTagAncestorBreakers: {
+        li: ['ul']
+      }
+    })
+
+    t.deepEqual(nodes, [{
+      type: 'element',
+      tagName: 'ul',
+      attributes: [],
+      children: [{
+        type: 'element',
+        tagName: 'li',
+        attributes: [],
+        children: [{
+          type: 'text',
+          content: 'abc'
+        }, {
+          type: 'element',
+          tagName: 'ul',
+          attributes: [],
+          children: [{
+            type: 'element',
+            tagName: 'span',
+            attributes: [],
+            children: [{
+              type: 'element',
+              tagName: 'li',
+              attributes: [],
+              children: [{
+                type: 'text',
+                content: 'def'
+              }]
+            }]
+          }]
+        }]
+      }]
+    }])
+  }
+
+  {
+    const str = '<ul><li>abc<ul><li>def<li>ghi</li></ul></li></ul>'
+    const tokens = lexer(str, lexerOptions)
+    const nodes = parser(tokens, {
+      voidTags: [],
+      closingTags: ['li'],
+      closingTagAncestorBreakers: {
+        li: ['ul']
+      }
+    })
+
+    t.deepEqual(nodes, [{
+      type: 'element',
+      tagName: 'ul',
+      attributes: [],
+      children: [{
+        type: 'element',
+        tagName: 'li',
+        attributes: [],
+        children: [{
+          type: 'text',
+          content: 'abc'
+        }, {
+          type: 'element',
+          tagName: 'ul',
+          attributes: [],
+          children: [{
+            type: 'element',
+            tagName: 'li',
+            attributes: [],
+            children: [{
+              type: 'text',
+              content: 'def'
+            }]
+          }, {
+            type: 'element',
+            tagName: 'li',
+            attributes: [],
+            children: [{
+              type: 'text',
+              content: 'ghi'
+            }]
+          }]
+        }]
+      }]
+    }])
+  }
 })
