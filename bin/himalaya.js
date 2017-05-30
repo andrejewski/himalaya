@@ -58,7 +58,7 @@
     ? path.join(root, args[1])
     : null
 
-  var text = fs.readFileSync(src)
+  var text = fs.readFileSync(src, {encoding: 'utf8'})
   var data = himalaya.parse(text)
   var cout = toJSON(data)
 
