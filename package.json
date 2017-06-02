@@ -46,7 +46,7 @@
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-sourcemaps": "^2.1.1",
-    "nyc": "^10.1.2",
+    "nyc": "^11.0.1",
     "pre-commit": "^1.2.2",
     "pre-push": "^0.1.1",
     "source-map-support": "^0.4.3",
