@@ -5,7 +5,7 @@ import {startsWith} from '../compat'
 
 export default function format (nodes) {
   return nodes.map(node => {
-    const type = capitialize(node.type)
+    const type = capitalize(node.type)
     if (type === 'Element') {
       const tagName = node.tagName.toLowerCase()
       const attributes = formatAttributes(node.attributes)
@@ -17,7 +17,7 @@ export default function format (nodes) {
   })
 }
 
-export function capitialize (str) {
+export function capitalize (str) {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
 

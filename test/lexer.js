@@ -5,7 +5,8 @@ import lexer, {
   lexTag,
   lexTagName,
   lexTagAttributes,
-  lexSkipTag
+  lexSkipTag,
+  isWhitespaceChar
 } from '../lib/lexer'
 
 test('lexer should return tokens', t => {
@@ -167,7 +168,7 @@ test('lexTagName should ignore leading not-tagname characters', t => {
   })
 })
 
-test('lexTagAttributes should tokenize attibutes until tag end', t => {
+test('lexTagAttributes should tokenize attributes until tag end', t => {
   const str = 'yes="no" maybe data-type="array">abcd'
   const finish = str.indexOf('>abcd')
   const state = {str, cursor: 0, tokens: []}
@@ -205,6 +206,28 @@ test('lexTagAttributes should handle an unset attribute name', t => {
   ])
 })
 
+test('lexTagAttributes should handle newline separated attributes', t => {
+  const str = '<div foo="bar"\nbaz="bat"></div>'
+  const state = {str, cursor: 4, tokens: []}
+  lexTagAttributes(state)
+  t.is(state.cursor, str.indexOf('></div>'))
+  t.deepEqual(state.tokens, [
+    {type: 'attribute', content: 'foo="bar"'},
+    {type: 'attribute', content: 'baz="bat"'}
+  ])
+})
+
+test('lexTagAttributes should handle tab separated attributes', t => {
+  const str = '<div foo="bar"\tbaz="bat"></div>'
+  const state = {str, cursor: 4, tokens: []}
+  lexTagAttributes(state)
+  t.is(state.cursor, str.indexOf('></div>'))
+  t.deepEqual(state.tokens, [
+    {type: 'attribute', content: 'foo="bar"'},
+    {type: 'attribute', content: 'baz="bat"'}
+  ])
+})
+
 test('lexSkipTag should tokenize as text until the matching tag name', t => {
   const str = 'abcd<test><h1>Test case</h1></test><x>'
   const finish = str.indexOf('<x>')
@@ -233,7 +256,7 @@ test('lexSkipTag should stop at the case-insensitive matching tag name', t => {
   ])
 })
 
-test('lexSkipTag should autoclose if the end tag is not found', t => {
+test('lexSkipTag should auto-close if the end tag is not found', t => {
   const str = '<script>This never ends'
   const state = {str, cursor: 8, tokens: []}
   lexSkipTag('script', state)
@@ -254,4 +277,11 @@ test('lexSkipTag should handle finding a stray "</" [resilience]', t => {
     {type: 'tag', content: 'script'},
     {type: 'tag-end', close: false}
   ])
+})
+
+test('isWhitespace should work', t => {
+  t.is(isWhitespaceChar(' '), true)
+  t.is(isWhitespaceChar('\n'), true)
+  t.is(isWhitespaceChar('\t'), true)
+  t.is(isWhitespaceChar('x'), false)
 })

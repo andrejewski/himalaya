@@ -94,13 +94,20 @@ export function lexTag (state) {
   return tagName
 }
 
+// There is one regex for whitespace.
+// See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#special-white-space
+const whitespace = /\s/
+export function isWhitespaceChar (char) {
+  return whitespace.test(char)
+}
+
 export function lexTagName (state) {
   const {str, cursor} = state
   const len = str.length
   let start = cursor
   while (start < len) {
     const char = str.charAt(start)
-    const isTagChar = !(char === ' ' || char === '/' || char === '>')
+    const isTagChar = !(isWhitespaceChar(char) || char === '/' || char === '>')
     if (isTagChar) break
     start++
   }
@@ -108,7 +115,7 @@ export function lexTagName (state) {
   let end = start + 1
   while (end < len) {
     const char = str.charAt(end)
-    const isTagChar = !(char === ' ' || char === '/' || char === '>')
+    const isTagChar = !(isWhitespaceChar(char) || char === '/' || char === '>')
     if (!isTagChar) break
     end++
   }
@@ -145,7 +152,7 @@ export function lexTagAttributes (state) {
       break
     }
 
-    const isWordEnd = char === ' '
+    const isWordEnd = isWhitespaceChar(char)
     if (isWordEnd) {
       if (cursor !== wordBegin) {
         words.push(str.slice(wordBegin, cursor))
