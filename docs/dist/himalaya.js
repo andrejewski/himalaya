@@ -64,7 +64,7 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 
 
 exports.default = format;
-exports.capitialize = capitialize;
+exports.capitalize = capitalize;
 exports.camelCase = camelCase;
 exports.castValue = castValue;
 exports.unquote = unquote;
@@ -76,7 +76,7 @@ var _compat = require('../compat');
 
 function format(nodes) {
   return nodes.map(function (node) {
-    var type = capitialize(node.type);
+    var type = capitalize(node.type);
     if (type === 'Element') {
       var tagName = node.tagName.toLowerCase();
       var attributes = formatAttributes(node.attributes);
@@ -88,7 +88,7 @@ function format(nodes) {
   });
 }
 
-function capitialize(str) {
+function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
@@ -245,6 +245,7 @@ exports.lex = lex;
 exports.lexText = lexText;
 exports.lexComment = lexComment;
 exports.lexTag = lexTag;
+exports.isWhitespaceChar = isWhitespaceChar;
 exports.lexTagName = lexTagName;
 exports.lexTagAttributes = lexTagAttributes;
 exports.lexSkipTag = lexSkipTag;
@@ -349,6 +350,13 @@ function lexTag(state) {
   return tagName;
 }
 
+// There is one regex for whitespace.
+// See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#special-white-space
+var whitespace = /\s/;
+function isWhitespaceChar(char) {
+  return whitespace.test(char);
+}
+
 function lexTagName(state) {
   var str = state.str,
       cursor = state.cursor;
@@ -357,7 +365,7 @@ function lexTagName(state) {
   var start = cursor;
   while (start < len) {
     var char = str.charAt(start);
-    var isTagChar = !(char === ' ' || char === '/' || char === '>');
+    var isTagChar = !(isWhitespaceChar(char) || char === '/' || char === '>');
     if (isTagChar) break;
     start++;
   }
@@ -365,7 +373,7 @@ function lexTagName(state) {
   var end = start + 1;
   while (end < len) {
     var _char = str.charAt(end);
-    var _isTagChar = !(_char === ' ' || _char === '/' || _char === '>');
+    var _isTagChar = !(isWhitespaceChar(_char) || _char === '/' || _char === '>');
     if (!_isTagChar) break;
     end++;
   }
@@ -404,7 +412,7 @@ function lexTagAttributes(state) {
       break;
     }
 
-    var isWordEnd = char === ' ';
+    var isWordEnd = isWhitespaceChar(char);
     if (isWordEnd) {
       if (cursor !== wordBegin) {
         words.push(str.slice(wordBegin, cursor));
