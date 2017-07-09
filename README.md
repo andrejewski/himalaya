@@ -1,17 +1,20 @@
 # Himalaya
 
-A pure JavaScript HTML parser that converts HTML into JSON, which can then be further manipulated by other modules.
-
-```bash
-npm install himalaya
-```
+> Parse HTML into JSON
 
 [![npm](https://img.shields.io/npm/v/himalaya.svg)](https://www.npmjs.com/package/himalaya)
 [![Build Status](https://travis-ci.org/andrejewski/himalaya.svg?branch=master)](https://travis-ci.org/andrejewski/himalaya)
 [![Coverage Status](https://coveralls.io/repos/github/andrejewski/himalaya/badge.svg?branch=master)](https://coveralls.io/github/andrejewski/himalaya?branch=master)
 [![Greenkeeper badge](https://badges.greenkeeper.io/andrejewski/himalaya.svg)](https://greenkeeper.io/)
 
+[Try online 🚀](http://andrejewski.github.io/himalaya)
+
 ## Usage
+
+### Node
+```bash
+npm install himalaya
+```
 
 ```js
 var himalaya = require('himalaya')
@@ -20,7 +23,23 @@ var json = himalaya.parse(html)
 console.log('👉', json)
 ```
 
-Installed globally, Himalaya includes a command-line tool to convert HTML files to JSON files, or as a pipe transform.
+### Browser
+Download [himalaya.js](https://github.com/andrejewski/himalaya/blob/master/docs/dist/himalaya.js) and put it in a `<script>` tag. Himalaya will be accessible from `window.himalaya`.
+
+```js
+var html = "<div>Hello world</div>"
+var json = himalaya.parse(html)
+console.log('👉', json)
+```
+
+Himalaya can be bundled with your code using tools like Browersify and Webpack.
+
+### Command-line
+Himalaya includes a command-line tool.
+
+```bash
+npm install --global himalaya
+```
 
 ```bash
 himalaya webpage.html webpage.json
@@ -43,7 +62,7 @@ Himalaya has a specification for its output. Essentially, everything is a node a
 </div>
 ```
 
-```json
+```js
 [
   {
     "type": "Element",
@@ -100,7 +119,7 @@ Himalaya handles a lot of HTML's fringe cases, like:
 - Does not parse the contents of `<script>`, `<style>`, and HTML5 `<template>` tags
 
 ### Preserves Whitespace
-Himalaya does not cut corners and returns an accurate representation of the HTML supplied.
+Himalaya does not cut corners and returns an accurate representation of the HTML supplied. To remove whitespace, post-process the JSON; check out [an example script](https://gist.github.com/andrejewski/773487d4f4a46b16865405d7b74eabf9).
 
 ## Going back to HTML
 Himalaya provides translation functions that can take the Himalaya AST and output HTML and Jade.
