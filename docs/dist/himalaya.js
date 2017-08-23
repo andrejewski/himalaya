@@ -207,7 +207,10 @@ var closingTags = ['html', 'head', 'body', 'p', 'dt', 'dd', 'li', 'option', 'the
 var closingTagAncestorBreakers = {
   li: ['ul', 'ol', 'menu'],
   dt: ['dl'],
-  dd: ['dl']
+  dd: ['dl'],
+  tbody: ['table'],
+  thead: ['table'],
+  tfoot: ['table']
 };
 
 /*

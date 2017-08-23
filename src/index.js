@@ -27,7 +27,10 @@ const closingTags = [
 const closingTagAncestorBreakers = {
   li: ['ul', 'ol', 'menu'],
   dt: ['dl'],
-  dd: ['dl']
+  dd: ['dl'],
+  tbody: ['table'],
+  thead: ['table'],
+  tfoot: ['table']
 }
 
 /*
