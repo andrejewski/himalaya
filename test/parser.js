@@ -326,13 +326,15 @@ test('parser() should handle ancestor breaker special case (#39)', t => {
 })
 
 test('parser() should handle nested tables', t => {
-  const str = '<table><tbody><tr><td><table><tbody></tbody></table></td></tr></tbody></table>'
+  const str = '<table><tbody><tr><td><table><tbody><tr><td></td></tr></tbody></table></td></tr></tbody></table>'
   const tokens = lexer(str, lexerOptions)
   const nodes = parser(tokens, {
     voidTags: [],
     closingTags: ['tbody'],
     closingTagAncestorBreakers: {
-      tbody: ['table']
+      tbody: ['table'],
+      tr: ['table'],
+      td: ['table']
     }
   })
 
@@ -360,7 +362,17 @@ test('parser() should handle nested tables', t => {
               type: 'element',
               tagName: 'tbody',
               attributes: [],
-              children: []
+              children: [{
+                type: 'element',
+                tagName: 'tr',
+                attributes: [],
+                children: [{
+                  type: 'element',
+                  tagName: 'td',
+                  attributes: [],
+                  children: []
+                }]
+              }]
             }]
           }]
         }]
