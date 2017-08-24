@@ -30,7 +30,9 @@ const closingTagAncestorBreakers = {
   dd: ['dl'],
   tbody: ['table'],
   thead: ['table'],
-  tfoot: ['table']
+  tfoot: ['table'],
+  tr: ['table'],
+  td: ['table']
 }
 
 /*
