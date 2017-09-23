@@ -147,7 +147,7 @@ function formatAttributes(attributes) {
 
 function formatStyles(str) {
   return str.trim().split(';').map(function (rule) {
-    return rule.trim().split(':');
+    return splitHead(rule.trim(), ':');
   }).reduce(function (styles, keyValue) {
     var _keyValue = _slicedToArray(keyValue, 2),
         rawKey = _keyValue[0],

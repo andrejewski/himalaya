@@ -72,7 +72,7 @@ export function formatAttributes (attributes) {
 
 export function formatStyles (str) {
   return str.trim().split(';')
-    .map(rule => rule.trim().split(':'))
+    .map(rule => splitHead(rule.trim(), ':'))
     .reduce((styles, keyValue) => {
       const [rawKey, rawValue] = keyValue
       if (rawValue) {

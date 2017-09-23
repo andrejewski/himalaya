@@ -30,3 +30,22 @@ test('formatStyles() should camelCase CSS properties', t => {
   }
   t.deepEqual(data, formatStyles(style))
 })
+
+test('formatStyles() should handle colons in CSS values', t => {
+  const style = 'background-image: url(http://example.com/x.img)'
+  t.deepEqual(formatStyles(style), {
+    backgroundImage: 'url(http://example.com/x.img)'
+  })
+})
+
+test('formatStyles() should preserve quoted values', t => {
+  const doubleStyle = 'content: "hello"'
+  t.deepEqual(formatStyles(doubleStyle), {
+    content: '"hello"'
+  })
+
+  const singleStyle = "content: 'hello'"
+  t.deepEqual(formatStyles(singleStyle), {
+    content: "'hello'"
+  })
+})
