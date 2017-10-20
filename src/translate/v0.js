@@ -2,16 +2,10 @@ import paul from 'paul'
 import {
   stringIncludes,
   arrayIncludes
-} from './compat'
+} from '../compat'
+import {voidTags} from '../tags'
 
-// c/p'd from ../index.js
-const voidTags = [
-  '!doctype', 'area', 'base', 'br', 'col', 'command',
-  'embed', 'hr', 'img', 'input', 'keygen', 'link',
-  'meta', 'param', 'source', 'track', 'wbr'
-]
-
-function serializeAttr (attr, value, isXml) {
+export function serializeAttr (attr, value, isXml) {
   if (!isXml && attr === value) return attr
   const text = value.toString()
   const quoteEscape = text.indexOf('\'') !== -1
@@ -20,22 +14,20 @@ function serializeAttr (attr, value, isXml) {
 }
 
 // stolen from underscore.string
-function dasherize (str) {
+export function dasherize (str) {
   return str.trim()
     .replace(/([A-Z])/g, '-$1')
     .replace(/[-_\s]+/g, '-')
     .toLowerCase()
 }
 
-function inlineStyle (style) {
+export function inlineStyle (style) {
   return Object.keys(style).reduce((css, key) => {
     return `${css}; ${dasherize(key)}: ${style[key]}`
   }, '').slice(2)
 }
 
-const htmlDefaults = {}
-
-function toHTML (tree, options = htmlDefaults) {
+export function toHTML (tree, options = {}) {
   const {doctype} = options
   const isXml = doctype === 'xml'
   const html = paul.walk(tree, (node, walk) => {
@@ -78,15 +70,12 @@ function toHTML (tree, options = htmlDefaults) {
 }
 
 const newline = '\n'
-const jadeDefaults = {
-  indentation: '  '
-}
 
-function isWhitespaceNode (node) {
+export function isWhitespaceNode (node) {
   return !(node.type === 'Text' && !node.content.trim())
 }
 
-function toJade (tree, options = jadeDefaults) {
+export function toPug (tree, options = {indentation: '  '}) {
   let {doctype} = options
   const multi = multilineText(options.indentation)
 
@@ -155,7 +144,7 @@ function toJade (tree, options = jadeDefaults) {
   return jade
 }
 
-function multilineText (indentation) {
+export function multilineText (indentation) {
   let format = line => line
   const hasTab = stringIncludes(indentation, '\t')
   if (hasTab) {
@@ -182,14 +171,14 @@ function multilineText (indentation) {
   }
 }
 
-function maxSharedIndent (lines) {
+export function maxSharedIndent (lines) {
   return lines.reduce(function (num, line) {
     return Math.min(num, line.length - line.trimLeft().length)
   }, Infinity)
 }
 
 // see http://jade-lang.com/reference/doctype/
-function doctypeShortcut (str) {
+export function doctypeShortcut (str) {
   if (stringIncludes(str, 'Transitional')) return 'transitional'
   if (stringIncludes(str, 'strict')) return 'strict'
   if (stringIncludes(str, 'Frameset')) return 'frameset'
@@ -199,8 +188,7 @@ function doctypeShortcut (str) {
   return 'html'
 }
 
-module.exports = {
+export default {
   toHTML,
-  toJade,
-  toPug: toJade
+  toPug
 }

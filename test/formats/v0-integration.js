@@ -1,13 +1,20 @@
 import test from 'ava'
-import himalaya from '../'
+import himalaya from '../../'
+import format from '../../lib/formats/v0'
 
 /*
+These tests ensure the parser and v0 formatting align.
+
 These tests mainly serve as a gauntlet for generic use.
 Do not add any more of these kinds of tests, instead
 test the more granular bits.
-
-TODO: remove overlapping tests
 */
+
+const parseDefaults = Object.assign(
+  {},
+  himalaya.parseDefaults,
+  {format}
+)
 
 test('parse() should pass the Hello World case', t => {
   const html = '<html><h1>Hello, World</h1></html>'
@@ -25,7 +32,7 @@ test('parse() should pass the Hello World case', t => {
       }]
     }]
   }]
-  t.deepEqual(data, himalaya.parse(html))
+  t.deepEqual(data, himalaya.parse(html, parseDefaults))
 })
 
 test('parse() should work for mixed attributes', t => {
@@ -56,7 +63,7 @@ test('parse() should work for mixed attributes', t => {
       }]
     }]
   }]
-  t.deepEqual(data, himalaya.parse(html))
+  t.deepEqual(data, himalaya.parse(html, parseDefaults))
 })
 
 test('parse() should work for commented html', t => {
@@ -73,7 +80,7 @@ test('parse() should work for commented html', t => {
       content: 'words'
     }]
   }]
-  t.deepEqual(data, himalaya.parse(html))
+  t.deepEqual(data, himalaya.parse(html, parseDefaults))
 })
 
 test('parse() should work for style properties', t => {
@@ -90,7 +97,7 @@ test('parse() should work for style properties', t => {
     },
     children: []
   }]
-  t.deepEqual(data, himalaya.parse(html))
+  t.deepEqual(data, himalaya.parse(html, parseDefaults))
 })
 
 test('parse() should work on data-* attributes', t => {
@@ -107,7 +114,7 @@ test('parse() should work on data-* attributes', t => {
     },
     children: []
   }]
-  t.deepEqual(data, himalaya.parse(html))
+  t.deepEqual(data, himalaya.parse(html, parseDefaults))
 })
 
 test('should work on unclosed tags', t => {
@@ -129,7 +136,7 @@ test('should work on unclosed tags', t => {
       content: 'three four'
     }]
   }]
-  t.deepEqual(data, himalaya.parse(html))
+  t.deepEqual(data, himalaya.parse(html, parseDefaults))
 })
 
 test('should not set custom attrs to zeroes', t => {
@@ -140,7 +147,7 @@ test('should not set custom attrs to zeroes', t => {
     attributes: {customAttr: ''},
     children: []
   }]
-  t.deepEqual(data, himalaya.parse(html))
+  t.deepEqual(data, himalaya.parse(html, parseDefaults))
 })
 
 test('custom tags should appear in the ast', t => {
@@ -155,7 +162,7 @@ test('custom tags should appear in the ast', t => {
         content: 'Hello'
       }]
     }]
-    t.deepEqual(data, himalaya.parse(html))
+    t.deepEqual(data, himalaya.parse(html, parseDefaults))
   }
 
   {
@@ -179,6 +186,6 @@ test('custom tags should appear in the ast', t => {
         children: []
       }]
     }]
-    t.deepEqual(data, himalaya.parse(html))
+    t.deepEqual(data, himalaya.parse(html, parseDefaults))
   }
 })

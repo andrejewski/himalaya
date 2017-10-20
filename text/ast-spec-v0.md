@@ -59,7 +59,7 @@ Note: the attribute `class` is changed to `className`.
 ## Comment Node
 
 ```js
-interace Comment <: Node {
+interface Comment <: Node {
 	type: "Comment";
 	content: string;
 }
