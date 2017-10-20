@@ -27,12 +27,12 @@ console.log('👉', json)
 Download [himalaya.js](https://github.com/andrejewski/himalaya/blob/master/docs/dist/himalaya.js) and put it in a `<script>` tag. Himalaya will be accessible from `window.himalaya`.
 
 ```js
-var html = "<div>Hello world</div>"
-var json = himalaya.parse(html)
+var html = '<div>Hello world</div>'
+var json = window.himalaya.parse(html)
 console.log('👉', json)
 ```
 
-Himalaya can be bundled with your code using tools like Browersify and Webpack.
+Himalaya bundles well with Browersify and Webpack.
 
 ### Command-line
 Himalaya includes a command-line tool.
@@ -51,7 +51,22 @@ Run `himalaya --help` for more information.
 
 ## Parser AST Specification
 
-Himalaya has a specification for its output. Essentially, everything is a node and can either be an `Element`, `Comment`, or `Text` node. The [full specification](https://github.com/andrejewski/himalaya/blob/master/text/ast-spec-v0.md) provides the complete details.
+Himalaya has specifications for its output.
+
+- [Version 0](https://github.com/andrejewski/himalaya/blob/master/text/ast-spec-v0.md) – The original specification from 2015. The focus of this specification is developer convenience, processing and formatting special cases of attributes.
+- [Version 1 ](https://github.com/andrejewski/himalaya/blob/master/text/ast-spec-v1.md) – The specification that will become default when Himalaya hits v1. The focus of this specification is fixing the problems in Version 0, in particular removing lossy attribute processing.
+
+The Version 0 specification is the default. If interested, please try the Version 1 spec and report any bugs. To use Version 1, override the `format` option of the `himalaya.parse` function:
+
+```js
+const himalaya = require('himalaya')
+const format = require('himalaya/lib/format/v1').default
+const parseOptions = Object.assign({}, himalaya.parseDefaults, {format})
+const json = himalaya.parse('<p>Hello World</p>', parseOptions)
+console.log('👉', json)
+```
+
+Himalaya v1 will not support the Version 0 specification.
 
 ### Example Input/Output
 
@@ -63,6 +78,7 @@ Himalaya has a specification for its output. Essentially, everything is a node a
 ```
 
 ```js
+// Version 0
 [
   {
     "type": "Element",
@@ -87,11 +103,35 @@ Himalaya has a specification for its output. Essentially, everything is a node a
       },
       {
         "type": "Comment",
-        "content": " ...and I liked it. ",
+        "content": " ...and I liked it. "
       }
     ]
   }
 ]
+```
+
+```js
+// Version 1
+[{
+  type: 'element',
+  tagName: 'div',
+  attributes: [{
+    key: 'class',
+    value: 'post post-featured'
+  }],
+  children: [{
+    type: 'element',
+    tagName: 'p',
+    attributes: [],
+    children: [{
+      type: 'text',
+      content: 'Himalaya parsed me...'
+    }]
+  }, {
+    type: 'comment',
+    content: ' ...and I liked it. '
+  }]
+}]
 ```
 
 *Note:* Text nodes consisting of whitespace are not shown for readability.
@@ -122,7 +162,7 @@ Himalaya handles a lot of HTML's fringe cases, like:
 Himalaya does not cut corners and returns an accurate representation of the HTML supplied. To remove whitespace, post-process the JSON; check out [an example script](https://gist.github.com/andrejewski/773487d4f4a46b16865405d7b74eabf9).
 
 ## Going back to HTML
-Himalaya provides translation functions that can take the Himalaya AST and output HTML and Jade.
+Himalaya provides translation functions that can take the Himalaya AST and output HTML and Pug.
 
 The following example does nothing. It parses the HTML to JSON then parses the JSON back into HTML, which is the exact same as the original. Himalaya does buff out the kinks of malformed originals.
 
@@ -136,7 +176,7 @@ var json = himalaya.parse(html)
 fs.writeFileSync('/webpage.html', toHTML(json))
 ```
 
-Translation supports [Jade](http://jade-lang.com/)/[Pug](https://pugjs.org) using `toJade`/`toPug`. See the [reference document for translations](https://github.com/andrejewski/himalaya/tree/master/text/translation.md).
+Version 0 translation supports [Pug](https://pugjs.org) using `toPug`. See the [reference document for translations](https://github.com/andrejewski/himalaya/tree/master/text/translation.md).
 
 ## Why "Himalaya"?
 

@@ -52,6 +52,30 @@ function arrayIncludes(array, searchElement, position) {
 }
 
 },{}],2:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.splitHead = splitHead;
+exports.unquote = unquote;
+function splitHead(str, sep) {
+  var idx = str.indexOf(sep);
+  if (idx === -1) return [str];
+  return [str.slice(0, idx), str.slice(idx + sep.length)];
+}
+
+function unquote(str) {
+  var car = str.charAt(0);
+  var end = str.length - 1;
+  var isQuoteStart = car === '"' || car === "'";
+  if (isQuoteStart && car === str.charAt(end)) {
+    return str.slice(1, end);
+  }
+  return str;
+}
+
+},{}],3:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -67,12 +91,12 @@ exports.default = format;
 exports.capitalize = capitalize;
 exports.camelCase = camelCase;
 exports.castValue = castValue;
-exports.unquote = unquote;
-exports.splitHead = splitHead;
 exports.formatAttributes = formatAttributes;
 exports.formatStyles = formatStyles;
 
 var _compat = require('../compat');
+
+var _util = require('./util');
 
 function format(nodes) {
   return nodes.map(function (node) {
@@ -106,30 +130,14 @@ function castValue(str) {
   return str;
 }
 
-function unquote(str) {
-  var car = str.charAt(0);
-  var end = str.length - 1;
-  var isQuoteStart = car === '"' || car === "'";
-  if (isQuoteStart && car === str.charAt(end)) {
-    return str.slice(1, end);
-  }
-  return str;
-}
-
-function splitHead(str, sep) {
-  var idx = str.indexOf(sep);
-  if (idx === -1) return [str];
-  return [str.slice(0, idx), str.slice(idx + sep.length)];
-}
-
 function formatAttributes(attributes) {
   return attributes.reduce(function (attrs, pair) {
-    var _splitHead = splitHead(pair.trim(), '='),
+    var _splitHead = (0, _util.splitHead)(pair.trim(), '='),
         _splitHead2 = _slicedToArray(_splitHead, 2),
         key = _splitHead2[0],
         value = _splitHead2[1];
 
-    value = value ? unquote(value) : key;
+    value = value ? (0, _util.unquote)(value) : key;
     if (key === 'class') {
       attrs.className = value.split(' ');
     } else if (key === 'style') {
@@ -147,7 +155,7 @@ function formatAttributes(attributes) {
 
 function formatStyles(str) {
   return str.trim().split(';').map(function (rule) {
-    return splitHead(rule.trim(), ':');
+    return (0, _util.splitHead)(rule.trim(), ':');
   }).reduce(function (styles, keyValue) {
     var _keyValue = _slicedToArray(keyValue, 2),
         rawKey = _keyValue[0],
@@ -162,7 +170,7 @@ function formatStyles(str) {
   }, {});
 }
 
-},{"../compat":1}],3:[function(require,module,exports){
+},{"../compat":1,"./util":2}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -183,50 +191,16 @@ var _v = require('./formats/v0');
 
 var _v2 = _interopRequireDefault(_v);
 
+var _tags = require('./tags');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/*
-  Tags which contain arbitrary non-parsed content
-  For example: <script> JavaScript should not be parsed
-*/
-var childlessTags = ['style', 'script', 'template'];
-
-/*
-  Tags which auto-close because they cannot be nested
-  For example: <p>Outer<p>Inner is <p>Outer</p><p>Inner</p>
-*/
-var closingTags = ['html', 'head', 'body', 'p', 'dt', 'dd', 'li', 'option', 'thead', 'th', 'tbody', 'tr', 'td', 'tfoot', 'colgroup'];
-
-/*
-  Closing tags which have ancestor tags which
-  may exist within them which prevent the
-  closing tag from auto-closing.
-  For example: in <li><ul><li></ul></li>,
-  the top-level <li> should not auto-close.
-*/
-var closingTagAncestorBreakers = {
-  li: ['ul', 'ol', 'menu'],
-  dt: ['dl'],
-  dd: ['dl'],
-  tbody: ['table'],
-  thead: ['table'],
-  tfoot: ['table'],
-  tr: ['table'],
-  td: ['table']
-};
-
-/*
-  Tags which do not need the closing tag
-  For example: <img> does not need </img>
-*/
-var voidTags = ['!doctype', 'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
-
 var parseDefaults = exports.parseDefaults = {
-  voidTags: voidTags,
-  closingTags: closingTags,
-  closingTagAncestorBreakers: closingTagAncestorBreakers,
-  childlessTags: childlessTags,
-  format: _v2.default // transform for v0 spec
+  format: _v2.default, // transform for v0 spec
+  voidTags: _tags.voidTags,
+  closingTags: _tags.closingTags,
+  childlessTags: _tags.childlessTags,
+  closingTagAncestorBreakers: _tags.closingTagAncestorBreakers
 };
 
 function parse(str) {
@@ -234,12 +208,12 @@ function parse(str) {
 
   var tokens = (0, _lexer2.default)(str, options);
   var nodes = (0, _parser2.default)(tokens, options);
-  return (0, _v2.default)(nodes, options);
+  return options.format(nodes, options);
 }
 
 exports.default = { parse: parse, parseDefaults: parseDefaults };
 
-},{"./formats/v0":2,"./lexer":4,"./parser":5}],4:[function(require,module,exports){
+},{"./formats/v0":3,"./lexer":5,"./parser":6,"./tags":7}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -514,7 +488,7 @@ function lexSkipTag(tagName, state) {
   }
 }
 
-},{"./compat":1}],5:[function(require,module,exports){
+},{"./compat":1}],6:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -636,6 +610,48 @@ function parse(state) {
   state.cursor = cursor;
 }
 
-},{"./compat":1}]},{},[3])(3)
+},{"./compat":1}],7:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/*
+  Tags which contain arbitary non-parsed content
+  For example: <script> JavaScript should not be parsed
+*/
+var childlessTags = exports.childlessTags = ['style', 'script', 'template'];
+
+/*
+  Tags which auto-close because they cannot be nested
+  For example: <p>Outer<p>Inner is <p>Outer</p><p>Inner</p>
+*/
+var closingTags = exports.closingTags = ['html', 'head', 'body', 'p', 'dt', 'dd', 'li', 'option', 'thead', 'th', 'tbody', 'tr', 'td', 'tfoot', 'colgroup'];
+
+/*
+  Closing tags which have ancestor tags which
+  may exist within them which prevent the
+  closing tag from auto-closing.
+  For example: in <li><ul><li></ul></li>,
+  the top-level <li> should not auto-close.
+*/
+var closingTagAncestorBreakers = exports.closingTagAncestorBreakers = {
+  li: ['ul', 'ol', 'menu'],
+  dt: ['dl'],
+  dd: ['dl'],
+  tbody: ['table'],
+  thead: ['table'],
+  tfoot: ['table'],
+  tr: ['table'],
+  td: ['table']
+};
+
+/*
+  Tags which do not need the closing tag
+  For example: <img> does not need </img>
+*/
+var voidTags = exports.voidTags = ['!doctype', 'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
+
+},{}]},{},[4])(4)
 });
 //# sourceMappingURL=himalaya.js.map

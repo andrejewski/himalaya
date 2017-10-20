@@ -1,1 +1,1 @@
-module.exports = require('./lib/translate')
+module.exports = require('./lib/translate/v0').default
