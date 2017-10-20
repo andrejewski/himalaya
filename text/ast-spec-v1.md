@@ -6,7 +6,7 @@ This document describes the abstract syntax tree output of Himalaya's parsing.
 
 ```ts
 interface Node {
-	type: string;
+  type: string;
 }
 ```
 
@@ -14,7 +14,7 @@ All nodes are `Node` objects. These object all have a property called `type` ind
 
 ```ts
 enum Type {
-	"element" | "comment" | "text"
+  "element" | "comment" | "text"
 }
 ```
 
@@ -30,10 +30,10 @@ Nodes can be of `type`:
 
 ```ts
 interface Element extends Node {
-	type: "element";
-	tagName: string;
+  type: "element";
+  tagName: string;
   children: [ Node ];
-	attributes: [ Attribute ];
+  attributes: [ Attribute ];
 }
 ```
 
@@ -52,8 +52,8 @@ A standalone attribute name such as `disabled` has its value set to `null`.
 
 ```ts
 interface Comment extends Node {
-	type: "comment";
-	content: string;
+  type: "comment";
+  content: string;
 }
 ```
 
@@ -63,8 +63,8 @@ A `<!-- comment -->` node.
 
 ```ts
 interface Text extends Node {
-	type: "text";
-	content: string;
+  type: "text";
+  content: string;
 }
 ```
 
