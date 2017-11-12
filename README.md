@@ -188,8 +188,6 @@ While I was testing the parser, I threw a download of my Twitter homepage in and
 
 My first implementation used look-ahead, found the matching closing tag, and then recursively parsed the inners until a tree results. That was problematic. This implementation uses no look-ahead and instead uses a stack to keep track of nesting while processing the source HTML. At an end tag the stack it cut to match and then parsing picks up again at the higher level.
 
-This parser runs without using any regular expressions. Since I wanted this to double as a learning resource, I wanted the code to be readable sans regexes.
-
 ## Contributing
 
 We can always have more tests: if you find a bug, create an issue or be **fabulous** and fix the problem and write the tests up yourself in a coherent pull request.
