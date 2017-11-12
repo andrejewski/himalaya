@@ -15,33 +15,43 @@ export function lex (state) {
   const {str} = state
   const len = str.length
   while (state.cursor < len) {
-    const isText = str.charAt(state.cursor) !== '<'
-    if (isText) {
-      lexText(state)
-      continue
-    }
-
-    const isComment = startsWith(str, '!--', state.cursor + 1)
-    if (isComment) {
-      lexComment(state)
-      continue
-    }
-
-    const tagName = lexTag(state)
-    if (tagName) {
-      const safeTag = tagName.toLowerCase()
-      const {childlessTags} = state.options
-      if (arrayIncludes(childlessTags, safeTag)) {
-        lexSkipTag(tagName, state)
+    const start = state.cursor
+    lexText(state)
+    if (state.cursor === start) {
+      const isComment = startsWith(str, '!--', state.cursor + 1)
+      if (isComment) {
+        lexComment(state)
+      } else {
+        const tagName = lexTag(state)
+        const safeTag = tagName.toLowerCase()
+        const {childlessTags} = state.options
+        if (arrayIncludes(childlessTags, safeTag)) {
+          lexSkipTag(tagName, state)
+        }
       }
     }
   }
 }
 
+const alphanumeric = /[A-Za-z0-9]/
+export function findTextEnd (str, index) {
+  while (true) {
+    const textEnd = str.indexOf('<', index)
+    if (textEnd === -1) {
+      return textEnd
+    }
+    const char = str.charAt(textEnd + 1)
+    if (char === '/' || char === '!' || alphanumeric.test(char)) {
+      return textEnd
+    }
+    index = textEnd + 1
+  }
+}
+
 export function lexText (state) {
-  const {str, cursor} = state
-  const textEnd = str.indexOf('<', cursor)
   const type = 'text'
+  const {str, cursor} = state
+  const textEnd = findTextEnd(str, cursor)
   if (textEnd === -1) {
     // there is only text left
     const content = str.slice(cursor)
@@ -94,7 +104,6 @@ export function lexTag (state) {
   return tagName
 }
 
-// There is one regex for whitespace.
 // See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#special-white-space
 const whitespace = /\s/
 export function isWhitespaceChar (char) {

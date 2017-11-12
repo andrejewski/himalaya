@@ -6,6 +6,7 @@ import lexer, {
   lexTagName,
   lexTagAttributes,
   lexSkipTag,
+  findTextEnd,
   isWhitespaceChar
 } from '../lib/lexer'
 
@@ -22,6 +23,37 @@ test('lexer should return tokens', t => {
     {type: 'tag', content: 'h1'},
     {type: 'tag-end', close: false}
   ])
+})
+
+test('lexer should parse tags beginning with alphanumeric names', t => {
+  {
+    const str = '2 <= 4 >'
+    const options = {childlessTags: []}
+    const tokens = lexer(str, options)
+    t.deepEqual(tokens, [
+      {type: 'text', content: '2 <= 4 >'}
+    ])
+  }
+
+  {
+    const str = '2 <a 4 >'
+    const options = {childlessTags: []}
+    const tokens = lexer(str, options)
+    t.deepEqual(tokens, [
+      {type: 'text', content: '2 '},
+      {type: 'tag-start', close: false},
+      {type: 'tag', content: 'a'},
+      {type: 'attribute', content: '4'},
+      {type: 'tag-end', close: false}
+    ])
+  }
+})
+
+test('findTextEnd should find the end of the text segment', t => {
+  t.is(findTextEnd('</end', 0), 0)
+  t.is(findTextEnd('<= 4', 0), -1)
+  t.is(findTextEnd('a<b', 0), 1)
+  t.is(findTextEnd('<= <= <=', 0), -1)
 })
 
 test('lexText should tokenize the next text segment', t => {

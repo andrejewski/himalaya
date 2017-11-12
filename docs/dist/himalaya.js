@@ -221,6 +221,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = lexer;
 exports.lex = lex;
+exports.findTextEnd = findTextEnd;
 exports.lexText = lexText;
 exports.lexComment = lexComment;
 exports.lexTag = lexTag;
@@ -244,36 +245,46 @@ function lex(state) {
 
   var len = str.length;
   while (state.cursor < len) {
-    var isText = str.charAt(state.cursor) !== '<';
-    if (isText) {
-      lexText(state);
-      continue;
-    }
+    var start = state.cursor;
+    lexText(state);
+    if (state.cursor === start) {
+      var isComment = (0, _compat.startsWith)(str, '!--', state.cursor + 1);
+      if (isComment) {
+        lexComment(state);
+      } else {
+        var tagName = lexTag(state);
+        var safeTag = tagName.toLowerCase();
+        var childlessTags = state.options.childlessTags;
 
-    var isComment = (0, _compat.startsWith)(str, '!--', state.cursor + 1);
-    if (isComment) {
-      lexComment(state);
-      continue;
-    }
-
-    var tagName = lexTag(state);
-    if (tagName) {
-      var safeTag = tagName.toLowerCase();
-      var childlessTags = state.options.childlessTags;
-
-      if ((0, _compat.arrayIncludes)(childlessTags, safeTag)) {
-        lexSkipTag(tagName, state);
+        if ((0, _compat.arrayIncludes)(childlessTags, safeTag)) {
+          lexSkipTag(tagName, state);
+        }
       }
     }
   }
 }
 
+var alphanumeric = /[A-Za-z0-9]/;
+function findTextEnd(str, index) {
+  while (true) {
+    var textEnd = str.indexOf('<', index);
+    if (textEnd === -1) {
+      return textEnd;
+    }
+    var char = str.charAt(textEnd + 1);
+    if (char === '/' || char === '!' || alphanumeric.test(char)) {
+      return textEnd;
+    }
+    index = textEnd + 1;
+  }
+}
+
 function lexText(state) {
+  var type = 'text';
   var str = state.str,
       cursor = state.cursor;
 
-  var textEnd = str.indexOf('<', cursor);
-  var type = 'text';
+  var textEnd = findTextEnd(str, cursor);
   if (textEnd === -1) {
     // there is only text left
     var _content = str.slice(cursor);
@@ -329,7 +340,6 @@ function lexTag(state) {
   return tagName;
 }
 
-// There is one regex for whitespace.
 // See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#special-white-space
 var whitespace = /\s/;
 function isWhitespaceChar(char) {
