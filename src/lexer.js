@@ -186,7 +186,6 @@ export function lexTagAttributes (state) {
   const type = 'attribute'
   for (let i = 0; i < wLen; i++) {
     const word = words[i]
-    if (!(word && word.length)) continue
     const isNotPair = word.indexOf('=') === -1
     if (isNotPair) {
       const secondWord = words[i + 1]

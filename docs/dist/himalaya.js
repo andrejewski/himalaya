@@ -360,7 +360,6 @@ function lexTagAttributes(state) {
   var type = 'attribute';
   for (var i = 0; i < wLen; i++) {
     var word = words[i];
-    if (!(word && word.length)) continue;
     var isNotPair = word.indexOf('=') === -1;
     if (isNotPair) {
       var secondWord = words[i + 1];

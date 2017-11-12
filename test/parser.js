@@ -113,6 +113,42 @@ test('parser() should handle optional-close tags', t => {
   }
 })
 
+test('parser() should auto-close unmatched child tags', t => {
+  const parserOptions = {
+    voidTags: [],
+    closingTags: [],
+    closingTagAncestorBreakers: {}
+  }
+  const str = '<div>This is <b>one <span>okay</div>'
+  const tokens = lexer(str, lexerOptions)
+  const nodes = parser(tokens, parserOptions)
+  t.deepEqual(nodes, [{
+    type: 'element',
+    tagName: 'div',
+    attributes: [],
+    children: [{
+      type: 'text',
+      content: 'This is '
+    }, {
+      type: 'element',
+      tagName: 'b',
+      attributes: [],
+      children: [{
+        type: 'text',
+        content: 'one '
+      }, {
+        type: 'element',
+        tagName: 'span',
+        attributes: [],
+        children: [{
+          type: 'text',
+          content: 'okay'
+        }]
+      }]
+    }]
+  }])
+})
+
 test('parser() should handle empty token arrays', t => {
   const tokens = []
   const nodes = parser(tokens, parserOptions)

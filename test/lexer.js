@@ -49,6 +49,21 @@ test('lexer should parse tags beginning with alphanumeric names', t => {
   }
 })
 
+test('lexer should skip lexing the content of childless tags', t => {
+  const str = '<template>Hello <img/></template>'
+  const options = {childlessTags: ['template']}
+  const tokens = lexer(str, options)
+  t.deepEqual(tokens, [
+    {type: 'tag-start', close: false},
+    {type: 'tag', content: 'template'},
+    {type: 'tag-end', close: false},
+    {type: 'text', content: 'Hello <img/>'},
+    {type: 'tag-start', close: true},
+    {type: 'tag', content: 'template'},
+    {type: 'tag-end', close: false}
+  ])
+})
+
 test('findTextEnd should find the end of the text segment', t => {
   t.is(findTextEnd('</end', 0), 0)
   t.is(findTextEnd('<= 4', 0), -1)
@@ -257,6 +272,40 @@ test('lexTagAttributes should handle tab separated attributes', t => {
   t.deepEqual(state.tokens, [
     {type: 'attribute', content: 'foo="bar"'},
     {type: 'attribute', content: 'baz="bat"'}
+  ])
+})
+
+test('lexTagAttributes should handle prefixed spacing', t => {
+  const str = '  \n\tyes="no">abcd'
+  const finish = str.indexOf('>abcd')
+  const state = {str, cursor: 0, tokens: []}
+  lexTagAttributes(state)
+  t.is(state.cursor, finish)
+  t.deepEqual(state.tokens, [
+    {type: 'attribute', content: 'yes="no"'}
+  ])
+})
+
+test('lexTagAttributes should handle unquoted one-word values', t => {
+  const str = 'num=8 ham = steak>abcd'
+  const finish = str.indexOf('>abcd')
+  const state = {str, cursor: 0, tokens: []}
+  lexTagAttributes(state)
+  t.is(state.cursor, finish)
+  t.deepEqual(state.tokens, [
+    {type: 'attribute', content: 'num=8'},
+    {type: 'attribute', content: 'ham=steak'}
+  ])
+})
+
+test('lexTagAttributes should handle incomplete attributes', t => {
+  const str = 'x = >abcd'
+  const finish = str.indexOf('>abcd')
+  const state = {str, cursor: 0, tokens: []}
+  lexTagAttributes(state)
+  t.is(state.cursor, finish)
+  t.deepEqual(state.tokens, [
+    {type: 'attribute', content: 'x'}
   ])
 })
 
