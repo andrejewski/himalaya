@@ -1,16 +1,9 @@
 import test from 'ava'
-import himalaya from '../../lib'
-import format from '../../lib/formats/v1'
-import translate from '../../lib/translate/v1'
-const {toHTML} = translate
+import {parse as rootParse, parseDefaults} from '../lib'
+import {toHTML as rootToHTML} from '../lib/stringify'
 
-const parseDefaults = Object.assign(
-  {},
-  himalaya.parseDefaults,
-  {format}
-)
-
-const parse = html => himalaya.parse(html, parseDefaults)
+const parse = html => rootParse(html, parseDefaults)
+const toHTML = ast => rootToHTML(ast, parseDefaults)
 
 test('toHTML() should handle simple conversions', t => {
   const str1 = '<h1>Text</h1>'

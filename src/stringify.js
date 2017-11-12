@@ -1,5 +1,4 @@
-import {voidTags} from '../tags'
-import {arrayIncludes} from '../compat'
+import {arrayIncludes} from './compat'
 
 export function formatAttributes (attributes) {
   return attributes.reduce((attrs, attribute) => {
@@ -13,7 +12,7 @@ export function formatAttributes (attributes) {
   }, '')
 }
 
-export function toHTML (tree, options = {}) {
+export function toHTML (tree, options) {
   return tree.map(node => {
     if (node.type === 'text') {
       return node.content
@@ -22,10 +21,10 @@ export function toHTML (tree, options = {}) {
       return `<!--${node.content}-->`
     }
     const {tagName, attributes, children} = node
-    const isSelfClosing = arrayIncludes(voidTags, tagName.toLowerCase())
+    const isSelfClosing = arrayIncludes(options.voidTags, tagName.toLowerCase())
     return isSelfClosing
       ? `<${tagName}${formatAttributes(attributes)}>`
-      : `<${tagName}${formatAttributes(attributes)}>${toHTML(children)}</${tagName}>`
+      : `<${tagName}${formatAttributes(attributes)}>${toHTML(children, options)}</${tagName}>`
   }).join('')
 }
 

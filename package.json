@@ -22,14 +22,8 @@
       }
     }
   },
-  "bin": {
-    "himalaya": "./bin/himalaya.js"
-  },
   "bugs": {
     "url": "https://github.com/andrejewski/himalaya/issues"
-  },
-  "dependencies": {
-    "paul": "0.0.3"
   },
   "devDependencies": {
     "ava": "^0.23.0",

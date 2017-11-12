@@ -1,191 +1,203 @@
 import test from 'ava'
-import himalaya from '../../'
-import format from '../../lib/formats/v0'
+import {parse, parseDefaults} from '../'
+import {formatAttributes} from '../lib/format'
+
+test('formatAttributes() should return a key-value array', t => {
+  const attributes = [
+    'foo="bar"',
+    'disabled',
+    'cake=\'man\''
+  ]
+  t.deepEqual(formatAttributes(attributes), [
+    {key: 'foo', value: 'bar'},
+    {key: 'disabled', value: null},
+    {key: 'cake', value: 'man'}
+  ])
+})
 
 /*
-These tests ensure the parser and v0 formatting align.
+These tests ensure the parser and v1 formatting align.
 
 These tests mainly serve as a gauntlet for generic use.
 Do not add any more of these kinds of tests, instead
 test the more granular bits.
 */
 
-const parseDefaults = Object.assign(
-  {},
-  himalaya.parseDefaults,
-  {format}
-)
-
 test('parse() should pass the Hello World case', t => {
   const html = '<html><h1>Hello, World</h1></html>'
   const data = [{
-    type: 'Element',
+    type: 'element',
     tagName: 'html',
-    attributes: {},
+    attributes: [],
     children: [{
-      type: 'Element',
+      type: 'element',
       tagName: 'h1',
-      attributes: {},
+      attributes: [],
       children: [{
-        type: 'Text',
+        type: 'text',
         content: 'Hello, World'
       }]
     }]
   }]
-  t.deepEqual(data, himalaya.parse(html, parseDefaults))
+  t.deepEqual(data, parse(html, parseDefaults))
 })
 
 test('parse() should work for mixed attributes', t => {
   const html = "<div class='section widget'><b disabled>Poop</b><p>Pee</p></div>"
   const data = [{
-    type: 'Element',
+    type: 'element',
     tagName: 'div',
-    attributes: {
-      className: ['section', 'widget']
-    },
+    attributes: [{
+      key: 'class',
+      value: 'section widget'
+    }],
     children: [{
-      type: 'Element',
+      type: 'element',
       tagName: 'b',
-      attributes: {
-        disabled: 'disabled'
-      },
+      attributes: [{
+        key: 'disabled',
+        value: null
+      }],
       children: [{
-        type: 'Text',
+        type: 'text',
         content: 'Poop'
       }]
     }, {
-      type: 'Element',
+      type: 'element',
       tagName: 'p',
-      attributes: {},
+      attributes: [],
       children: [{
-        type: 'Text',
+        type: 'text',
         content: 'Pee'
       }]
     }]
   }]
-  t.deepEqual(data, himalaya.parse(html, parseDefaults))
+  t.deepEqual(data, parse(html, parseDefaults))
 })
 
 test('parse() should work for commented html', t => {
   const html = '<b><!--comment text-->words</b>'
   const data = [{
-    type: 'Element',
+    type: 'element',
     tagName: 'b',
-    attributes: {},
+    attributes: [],
     children: [{
-      type: 'Comment',
+      type: 'comment',
       content: 'comment text'
     }, {
-      type: 'Text',
+      type: 'text',
       content: 'words'
     }]
   }]
-  t.deepEqual(data, himalaya.parse(html, parseDefaults))
+  t.deepEqual(data, parse(html, parseDefaults))
 })
 
 test('parse() should work for style properties', t => {
   const html = "<div style='width: 360px; height: 120px; background-color: #fff'></div>"
   const data = [{
-    type: 'Element',
+    type: 'element',
     tagName: 'div',
-    attributes: {
-      style: {
-        width: '360px',
-        height: '120px',
-        backgroundColor: '#fff'
-      }
-    },
+    attributes: [{
+      key: 'style',
+      value: 'width: 360px; height: 120px; background-color: #fff'
+    }],
     children: []
   }]
-  t.deepEqual(data, himalaya.parse(html, parseDefaults))
+  t.deepEqual(data, parse(html, parseDefaults))
 })
 
 test('parse() should work on data-* attributes', t => {
   const html = "<div data-num=0 data-word='poop' data-cake='2'></div>"
   const data = [{
-    type: 'Element',
+    type: 'element',
     tagName: 'div',
-    attributes: {
-      dataset: {
-        num: 0,
-        word: 'poop',
-        cake: 2
-      }
-    },
+    attributes: [{
+      key: 'data-num',
+      value: '0'
+    }, {
+      key: 'data-word',
+      value: 'poop'
+    }, {
+      key: 'data-cake',
+      value: '2'
+    }],
     children: []
   }]
-  t.deepEqual(data, himalaya.parse(html, parseDefaults))
+  t.deepEqual(data, parse(html, parseDefaults))
 })
 
 test('should work on unclosed tags', t => {
   const html = '<p>One two<p>three four'
   const data = [{
-    type: 'Element',
+    type: 'element',
     tagName: 'p',
-    attributes: {},
+    attributes: [],
     children: [{
-      type: 'Text',
+      type: 'text',
       content: 'One two'
     }]
   }, {
-    type: 'Element',
+    type: 'element',
     tagName: 'p',
-    attributes: {},
+    attributes: [],
     children: [{
-      type: 'Text',
+      type: 'text',
       content: 'three four'
     }]
   }]
-  t.deepEqual(data, himalaya.parse(html, parseDefaults))
+  t.deepEqual(data, parse(html, parseDefaults))
 })
 
 test('should not set custom attrs to zeroes', t => {
   const html = "<div custom-attr=''></div>"
   const data = [{
-    type: 'Element',
+    type: 'element',
     tagName: 'div',
-    attributes: {customAttr: ''},
+    attributes: [{
+      key: 'custom-attr',
+      value: ''
+    }],
     children: []
   }]
-  t.deepEqual(data, himalaya.parse(html, parseDefaults))
+  t.deepEqual(data, parse(html, parseDefaults))
 })
 
 test('custom tags should appear in the ast', t => {
   {
     const html = '<result>Hello</result>'
     const data = [{
-      type: 'Element',
+      type: 'element',
       tagName: 'result',
-      attributes: {},
+      attributes: [],
       children: [{
-        type: 'Text',
+        type: 'text',
         content: 'Hello'
       }]
     }]
-    t.deepEqual(data, himalaya.parse(html, parseDefaults))
+    t.deepEqual(data, parse(html, parseDefaults))
   }
 
   {
     const html = `<div><h1>Hi there</h1><result></result></div>`
     const data = [{
-      type: 'Element',
+      type: 'element',
       tagName: 'div',
-      attributes: {},
+      attributes: [],
       children: [{
-        type: 'Element',
+        type: 'element',
         tagName: 'h1',
-        attributes: {},
+        attributes: [],
         children: [{
-          type: 'Text',
+          type: 'text',
           content: 'Hi there'
         }]
       }, {
-        type: 'Element',
+        type: 'element',
         tagName: 'result',
-        attributes: {},
+        attributes: [],
         children: []
       }]
     }]
-    t.deepEqual(data, himalaya.parse(html, parseDefaults))
+    t.deepEqual(data, parse(html, parseDefaults))
   }
 })

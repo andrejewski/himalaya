@@ -1,6 +1,7 @@
 import lexer from './lexer'
 import parser from './parser'
-import format from './formats/v0'
+import {format} from './format'
+import {toHTML} from './stringify'
 import {
   voidTags,
   closingTags,
@@ -9,7 +10,6 @@ import {
 } from './tags'
 
 export const parseDefaults = {
-  format, // transform for v0 spec
   voidTags,
   closingTags,
   childlessTags,
@@ -19,7 +19,9 @@ export const parseDefaults = {
 export function parse (str, options = parseDefaults) {
   const tokens = lexer(str, options)
   const nodes = parser(tokens, options)
-  return options.format(nodes, options)
+  return format(nodes, options)
 }
 
-export default {parse, parseDefaults}
+export function stringify (ast, options = parseDefaults) {
+  return toHTML(ast, options)
+}
