@@ -52,13 +52,15 @@ function arrayIncludes(array, searchElement, position) {
 }
 
 },{}],2:[function(require,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.splitHead = splitHead;
 exports.unquote = unquote;
+exports.format = format;
+exports.formatAttributes = formatAttributes;
 function splitHead(str, sep) {
   var idx = str.indexOf(sep);
   if (idx === -1) return [str];
@@ -75,33 +77,10 @@ function unquote(str) {
   return str;
 }
 
-},{}],3:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }(); /*
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           This format adheres to the v0 ASP spec.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         */
-
-
-exports.default = format;
-exports.capitalize = capitalize;
-exports.camelCase = camelCase;
-exports.castValue = castValue;
-exports.formatAttributes = formatAttributes;
-exports.formatStyles = formatStyles;
-
-var _compat = require('../compat');
-
-var _util = require('./util');
-
 function format(nodes) {
   return nodes.map(function (node) {
-    var type = capitalize(node.type);
-    if (type === 'Element') {
+    var type = node.type;
+    if (type === 'element') {
       var tagName = node.tagName.toLowerCase();
       var attributes = formatAttributes(node.attributes);
       var children = format(node.children);
@@ -112,65 +91,16 @@ function format(nodes) {
   });
 }
 
-function capitalize(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-function camelCase(str) {
-  return str.split('-').reduce(function (str, word) {
-    return str + word.charAt(0).toUpperCase() + word.slice(1);
+function formatAttributes(attributes) {
+  return attributes.map(function (attribute) {
+    var parts = splitHead(attribute.trim(), '=');
+    var key = parts[0];
+    var value = typeof parts[1] === 'string' ? unquote(parts[1]) : null;
+    return { key: key, value: value };
   });
 }
 
-function castValue(str) {
-  if (typeof str !== 'string') return str;
-  if (str === '') return str;
-  var num = +str;
-  if (!isNaN(num)) return num;
-  return str;
-}
-
-function formatAttributes(attributes) {
-  return attributes.reduce(function (attrs, pair) {
-    var _splitHead = (0, _util.splitHead)(pair.trim(), '='),
-        _splitHead2 = _slicedToArray(_splitHead, 2),
-        key = _splitHead2[0],
-        value = _splitHead2[1];
-
-    value = value ? (0, _util.unquote)(value) : key;
-    if (key === 'class') {
-      attrs.className = value.split(' ');
-    } else if (key === 'style') {
-      attrs.style = formatStyles(value);
-    } else if ((0, _compat.startsWith)(key, 'data-')) {
-      attrs.dataset = attrs.dataset || {};
-      var prop = camelCase(key.slice(5));
-      attrs.dataset[prop] = castValue(value);
-    } else {
-      attrs[camelCase(key)] = castValue(value);
-    }
-    return attrs;
-  }, {});
-}
-
-function formatStyles(str) {
-  return str.trim().split(';').map(function (rule) {
-    return (0, _util.splitHead)(rule.trim(), ':');
-  }).reduce(function (styles, keyValue) {
-    var _keyValue = _slicedToArray(keyValue, 2),
-        rawKey = _keyValue[0],
-        rawValue = _keyValue[1];
-
-    if (rawValue) {
-      var key = camelCase(rawKey.trim());
-      var value = castValue(rawValue.trim());
-      styles[key] = value;
-    }
-    return styles;
-  }, {});
-}
-
-},{"../compat":1,"./util":2}],4:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -178,6 +108,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.parseDefaults = undefined;
 exports.parse = parse;
+exports.stringify = stringify;
 
 var _lexer = require('./lexer');
 
@@ -187,16 +118,15 @@ var _parser = require('./parser');
 
 var _parser2 = _interopRequireDefault(_parser);
 
-var _v = require('./formats/v0');
+var _format = require('./format');
 
-var _v2 = _interopRequireDefault(_v);
+var _stringify = require('./stringify');
 
 var _tags = require('./tags');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var parseDefaults = exports.parseDefaults = {
-  format: _v2.default, // transform for v0 spec
   voidTags: _tags.voidTags,
   closingTags: _tags.closingTags,
   childlessTags: _tags.childlessTags,
@@ -208,12 +138,16 @@ function parse(str) {
 
   var tokens = (0, _lexer2.default)(str, options);
   var nodes = (0, _parser2.default)(tokens, options);
-  return options.format(nodes, options);
+  return (0, _format.format)(nodes, options);
 }
 
-exports.default = { parse: parse, parseDefaults: parseDefaults };
+function stringify(ast) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : parseDefaults;
 
-},{"./formats/v0":3,"./lexer":5,"./parser":6,"./tags":7}],5:[function(require,module,exports){
+  return (0, _stringify.toHTML)(ast, options);
+}
+
+},{"./format":2,"./lexer":4,"./parser":5,"./stringify":6,"./tags":7}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -426,7 +360,6 @@ function lexTagAttributes(state) {
   var type = 'attribute';
   for (var i = 0; i < wLen; i++) {
     var word = words[i];
-    if (!(word && word.length)) continue;
     var isNotPair = word.indexOf('=') === -1;
     if (isNotPair) {
       var secondWord = words[i + 1];
@@ -498,7 +431,7 @@ function lexSkipTag(tagName, state) {
   }
 }
 
-},{"./compat":1}],6:[function(require,module,exports){
+},{"./compat":1}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -620,6 +553,50 @@ function parse(state) {
   state.cursor = cursor;
 }
 
+},{"./compat":1}],6:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.formatAttributes = formatAttributes;
+exports.toHTML = toHTML;
+
+var _compat = require('./compat');
+
+function formatAttributes(attributes) {
+  return attributes.reduce(function (attrs, attribute) {
+    var key = attribute.key,
+        value = attribute.value;
+
+    if (value === null) {
+      return attrs + ' ' + key;
+    }
+    var quoteEscape = value.indexOf('\'') !== -1;
+    var quote = quoteEscape ? '"' : '\'';
+    return attrs + ' ' + key + '=' + quote + value + quote;
+  }, '');
+}
+
+function toHTML(tree, options) {
+  return tree.map(function (node) {
+    if (node.type === 'text') {
+      return node.content;
+    }
+    if (node.type === 'comment') {
+      return '<!--' + node.content + '-->';
+    }
+    var tagName = node.tagName,
+        attributes = node.attributes,
+        children = node.children;
+
+    var isSelfClosing = (0, _compat.arrayIncludes)(options.voidTags, tagName.toLowerCase());
+    return isSelfClosing ? '<' + tagName + formatAttributes(attributes) + '>' : '<' + tagName + formatAttributes(attributes) + '>' + toHTML(children, options) + '</' + tagName + '>';
+  }).join('');
+}
+
+exports.default = { toHTML: toHTML };
+
 },{"./compat":1}],7:[function(require,module,exports){
 'use strict';
 
@@ -654,14 +631,13 @@ var closingTagAncestorBreakers = exports.closingTagAncestorBreakers = {
   tfoot: ['table'],
   tr: ['table'],
   td: ['table']
-};
 
-/*
-  Tags which do not need the closing tag
-  For example: <img> does not need </img>
-*/
-var voidTags = exports.voidTags = ['!doctype', 'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
+  /*
+    Tags which do not need the closing tag
+    For example: <img> does not need </img>
+  */
+};var voidTags = exports.voidTags = ['!doctype', 'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
 
-},{}]},{},[4])(4)
+},{}]},{},[3])(3)
 });
 //# sourceMappingURL=himalaya.js.map
