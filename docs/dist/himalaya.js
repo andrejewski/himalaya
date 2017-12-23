@@ -631,12 +631,13 @@ var closingTagAncestorBreakers = exports.closingTagAncestorBreakers = {
   tfoot: ['table'],
   tr: ['table'],
   td: ['table']
+};
 
-  /*
-    Tags which do not need the closing tag
-    For example: <img> does not need </img>
-  */
-};var voidTags = exports.voidTags = ['!doctype', 'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
+/*
+  Tags which do not need the closing tag
+  For example: <img> does not need </img>
+*/
+var voidTags = exports.voidTags = ['!doctype', 'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
 
 },{}]},{},[3])(3)
 });
