@@ -1,4 +1,84 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.himalaya = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.himalaya = f()}})(function(){var define,module,exports;return (function(){function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}return e})()({1:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.formatCell = formatCell;
+exports.formatAttributes = formatAttributes;
+exports.format = format;
+exports.filterCell = filterCell;
+exports.mapCell = mapCell;
+
+var _format = require('./format');
+
+var options = {
+  root: {
+    type: 'div',
+    class: 'cell-root',
+    active: true
+  },
+  trim: false,
+  lowerCaseTag: true
+};
+
+function formatCell(nodes, _options) {
+  Object.assign(options, _options);
+  var rootCell = {
+    $type: options.root.type,
+    class: options.root.class,
+    $cell: options.root.active
+  };
+  rootCell['$components'] = format(nodes, rootCell);
+  return rootCell;
+}
+
+function formatAttributes(attributes, cell) {
+  attributes.map(function (attribute) {
+    var parts = (0, _format.splitHead)(attribute.trim(), '=');
+    var key = parts[0];
+    var value = typeof parts[1] === 'string' ? (0, _format.unquote)(parts[1]) : null;
+    cell[key] = value;
+  });
+  return cell;
+}
+
+function format(nodes, parent) {
+  return nodes.filter(function (node) {
+    if (node.type === 'text') {
+      return filterCell(node, parent);
+    }
+    return node;
+  }).map(function (node) {
+    return mapCell(node);
+  });
+}
+
+function filterCell(node, parent) {
+  if (options.trim) {
+    if (node.content.trim() !== '\n' && node.content.replace(/\s/g, '').length > 0) {
+      parent.$html = parent.$html || '';
+      parent.$html += node.content.trim();
+    }
+    return false;
+  }
+  parent.$html = parent.$html || '';
+  parent.$html += node.content;
+  return false;
+}
+
+function mapCell(node) {
+  var cell = {};
+  cell.$type = options.lowerCaseTag ? node.tagName.toLowerCase() : node.tagName;
+  formatAttributes(node.attributes, cell);
+  var childComponents = format(node.children, cell);
+  if (childComponents.length > 0) {
+    cell.$components = childComponents;
+  }
+  return cell;
+}
+
+},{"./format":3}],2:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -51,7 +131,7 @@ function arrayIncludes(array, searchElement, position) {
   return false;
 }
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -100,7 +180,7 @@ function formatAttributes(attributes) {
   });
 }
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -122,6 +202,8 @@ var _format = require('./format');
 
 var _stringify = require('./stringify');
 
+var _cell = require('./cell');
+
 var _tags = require('./tags');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -134,11 +216,10 @@ var parseDefaults = exports.parseDefaults = {
 };
 
 function parse(str) {
-  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : parseDefaults;
-
+  var options = Object.assign(parseDefaults, arguments[1]);
   var tokens = (0, _lexer2.default)(str, options);
   var nodes = (0, _parser2.default)(tokens, options);
-  return (0, _format.format)(nodes, options);
+  return !options.cell ? (0, _format.format)(nodes, options) : (0, _cell.formatCell)(nodes, options);
 }
 
 function stringify(ast) {
@@ -147,7 +228,7 @@ function stringify(ast) {
   return (0, _stringify.toHTML)(ast, options);
 }
 
-},{"./format":2,"./lexer":4,"./parser":5,"./stringify":6,"./tags":7}],4:[function(require,module,exports){
+},{"./cell":1,"./format":3,"./lexer":5,"./parser":6,"./stringify":7,"./tags":8}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -431,7 +512,7 @@ function lexSkipTag(tagName, state) {
   }
 }
 
-},{"./compat":1}],5:[function(require,module,exports){
+},{"./compat":2}],6:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -553,7 +634,7 @@ function parse(state) {
   state.cursor = cursor;
 }
 
-},{"./compat":1}],6:[function(require,module,exports){
+},{"./compat":2}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -597,7 +678,7 @@ function toHTML(tree, options) {
 
 exports.default = { toHTML: toHTML };
 
-},{"./compat":1}],7:[function(require,module,exports){
+},{"./compat":2}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -631,14 +712,13 @@ var closingTagAncestorBreakers = exports.closingTagAncestorBreakers = {
   tfoot: ['table'],
   tr: ['table'],
   td: ['table']
-};
 
-/*
-  Tags which do not need the closing tag
-  For example: <img> does not need </img>
-*/
-var voidTags = exports.voidTags = ['!doctype', 'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
+  /*
+    Tags which do not need the closing tag
+    For example: <img> does not need </img>
+  */
+};var voidTags = exports.voidTags = ['!doctype', 'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
 
-},{}]},{},[3])(3)
+},{}]},{},[4])(4)
 });
 //# sourceMappingURL=himalaya.js.map
