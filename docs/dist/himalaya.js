@@ -1,4 +1,4 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.himalaya = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.himalaya = f()}})(function(){var define,module,exports;return (function(){function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}return e})()({1:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -489,16 +489,25 @@ function parse(state) {
     cursor++;
     var tagName = tagToken.content.toLowerCase();
     if (token.close) {
-      var item = void 0;
-      while (item = stack.pop()) {
-        if (tagName === item.tagName) break;
+      var index = stack.length;
+      var didRewind = false;
+      while (--index > -1) {
+        if (stack[index].tagName === tagName) {
+          stack.splice(index);
+          didRewind = true;
+          break;
+        }
       }
       while (cursor < len) {
         var endToken = tokens[cursor];
         if (endToken.type !== 'tag-end') break;
         cursor++;
       }
-      break;
+      if (didRewind) {
+        break;
+      } else {
+        continue;
+      }
     }
 
     var isClosingTag = (0, _compat.arrayIncludes)(options.closingTags, tagName);
@@ -631,13 +640,12 @@ var closingTagAncestorBreakers = exports.closingTagAncestorBreakers = {
   tfoot: ['table'],
   tr: ['table'],
   td: ['table']
-};
 
-/*
-  Tags which do not need the closing tag
-  For example: <img> does not need </img>
-*/
-var voidTags = exports.voidTags = ['!doctype', 'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
+  /*
+    Tags which do not need the closing tag
+    For example: <img> does not need </img>
+  */
+};var voidTags = exports.voidTags = ['!doctype', 'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
 
 },{}]},{},[3])(3)
 });
