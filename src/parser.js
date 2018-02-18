@@ -43,16 +43,25 @@ export function parse (state) {
     cursor++
     const tagName = tagToken.content.toLowerCase()
     if (token.close) {
-      let item
-      while ((item = stack.pop())) {
-        if (tagName === item.tagName) break
+      let index = stack.length
+      let didRewind = false
+      while (--index > -1) {
+        if (stack[index].tagName === tagName) {
+          stack.splice(index)
+          didRewind = true
+          break
+        }
       }
       while (cursor < len) {
         const endToken = tokens[cursor]
         if (endToken.type !== 'tag-end') break
         cursor++
       }
-      break
+      if (didRewind) {
+        break
+      } else {
+        continue
+      }
     }
 
     const isClosingTag = arrayIncludes(options.closingTags, tagName)
