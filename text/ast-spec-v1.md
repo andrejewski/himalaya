@@ -69,3 +69,23 @@ interface Text extends Node {
 ```
 
 A `text` node.
+
+## Positions
+The parser can be configured to emit line, column, and index numbers for nodes.
+The `includePositions: true` parse option adds the `position` field:
+
+```ts
+interface Position {
+  index: number;
+  line: number;
+  column: number;
+}
+
+interface Node {
+  type: string;
+  position: {
+    start: Position;
+    end: Position;
+  }
+}
+```

@@ -1,5 +1,5 @@
 import test from 'ava'
-import {parse, parseDefaults} from '../'
+import {parse, parseDefaults} from '../lib'
 import {formatAttributes} from '../lib/format'
 
 test('formatAttributes() should return a key-value array', t => {
@@ -13,6 +13,49 @@ test('formatAttributes() should return a key-value array', t => {
     {key: 'disabled', value: null},
     {key: 'cake', value: 'man'}
   ])
+})
+
+test('parse() should emit positions if includePositions is true', t => {
+  t.deepEqual(
+    parse('<h1>Hello world</h1>', Object.assign({}, parseDefaults, { includePositions: true })),
+    [
+      {
+        type: 'element',
+        tagName: 'h1',
+        attributes: [],
+        children: [
+          {
+            type: 'text',
+            content: 'Hello world',
+            position: {
+              start: {
+                index: 4,
+                line: 0,
+                column: 4
+              },
+              end: {
+                index: 15,
+                line: 0,
+                column: 15
+              }
+            }
+          }
+        ],
+        position: {
+          start: {
+            index: 0,
+            line: 0,
+            column: 0
+          },
+          end: {
+            index: 20,
+            line: 0,
+            column: 20
+          }
+        }
+      }
+    ]
+  )
 })
 
 /*

@@ -14,17 +14,21 @@ export function unquote (str) {
   return str
 }
 
-export function format (nodes) {
+export function format (nodes, options) {
   return nodes.map(node => {
     const type = node.type
-    if (type === 'element') {
-      const tagName = node.tagName.toLowerCase()
-      const attributes = formatAttributes(node.attributes)
-      const children = format(node.children)
-      return {type, tagName, attributes, children}
+    const outputNode = type === 'element'
+      ? {
+        type,
+        tagName: node.tagName.toLowerCase(),
+        attributes: formatAttributes(node.attributes),
+        children: format(node.children, options)
+      }
+      : { type, content: node.content }
+    if (options.includePositions) {
+      outputNode.position = node.position
     }
-
-    return {type, content: node.content}
+    return outputNode
   })
 }
 

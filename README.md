@@ -88,6 +88,37 @@ Himalaya handles a lot of HTML's fringe cases, like:
 ### Preserves Whitespace
 Himalaya does not cut corners and returns an accurate representation of the HTML supplied. To remove whitespace, post-process the JSON; check out [an example script](https://gist.github.com/andrejewski/773487d4f4a46b16865405d7b74eabf9).
 
+### Line, column, and index positions
+Himalaya can include the start and end positions of nodes in the parse output.
+To enable this, you can pass `parse` the `parseDefaults` extended with `includePositions: true`:
+
+```js
+import { parse, parseDefaults } from 'himalaya'
+parse('<img>', { ...parseDefaults, includePositions: true })
+/* =>
+[
+  {
+    "type": "element",
+    "tagName": "img",
+    "attributes": [],
+    "children": [],
+    "position": {
+      "start": {
+        "index": 0,
+        "line": 0,
+        "column": 0
+      },
+      "end": {
+        "index": 5,
+        "line": 0,
+        "column": 5
+      }
+    }
+  }
+]
+*/
+```
+
 ## Going back to HTML
 Himalaya provides a `stringify` method. The following example parses the HTML to JSON then parses the JSON back into HTML.
 

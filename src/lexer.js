@@ -5,26 +5,65 @@ import {
   arrayIncludes
 } from './compat'
 
+export function feedPosition (position, str, len) {
+  const start = position.index
+  const end = position.index = start + len
+  for (let i = start; i < end; i++) {
+    const char = str.charAt(i)
+    if (char === '\n') {
+      position.line++
+      position.column = 0
+    } else {
+      position.column++
+    }
+  }
+}
+
+export function jumpPosition (position, str, end) {
+  const len = end - position.index
+  return feedPosition(position, str, len)
+}
+
+export function makeInitialPosition () {
+  return {
+    index: 0,
+    column: 0,
+    line: 0
+  }
+}
+
+export function copyPosition (position) {
+  return {
+    index: position.index,
+    line: position.line,
+    column: position.column
+  }
+}
+
 export default function lexer (str, options) {
-  const state = {str, options, cursor: 0, tokens: []}
+  const state = {
+    str,
+    options,
+    position: makeInitialPosition(),
+    tokens: []
+  }
   lex(state)
   return state.tokens
 }
 
 export function lex (state) {
-  const {str} = state
+  const {str, options: {childlessTags}} = state
   const len = str.length
-  while (state.cursor < len) {
-    const start = state.cursor
+  while (state.position.index < len) {
+    const start = state.position.index
     lexText(state)
-    if (state.cursor === start) {
-      const isComment = startsWith(str, '!--', state.cursor + 1)
+    if (state.position.index === start) {
+      const isComment = startsWith(str, '!--', start + 1)
       if (isComment) {
         lexComment(state)
       } else {
         const tagName = lexTag(state)
         const safeTag = tagName.toLowerCase()
-        const {childlessTags} = state.options
         if (arrayIncludes(childlessTags, safeTag)) {
           lexSkipTag(tagName, state)
         }
@@ -50,56 +89,59 @@ export function findTextEnd (str, index) {
 
 export function lexText (state) {
   const type = 'text'
-  const {str, cursor} = state
-  const textEnd = findTextEnd(str, cursor)
+  const {str, position} = state
+  let textEnd = findTextEnd(str, position.index)
+  if (textEnd === position.index) return
   if (textEnd === -1) {
-    // there is only text left
-    const content = str.slice(cursor)
-    state.cursor = str.length
-    state.tokens.push({type, content})
-    return
+    textEnd = str.length
   }
 
-  if (textEnd === cursor) return
-
-  const content = str.slice(cursor, textEnd)
-  state.cursor = textEnd
-  state.tokens.push({type, content})
+  const start = copyPosition(position)
+  const content = str.slice(position.index, textEnd)
+  jumpPosition(position, str, textEnd)
+  const end = copyPosition(position)
+  state.tokens.push({type, content, position: {start, end}})
 }
 
 export function lexComment (state) {
-  state.cursor += 4 // "<!--".length
-  const {str, cursor} = state
-  const commentEnd = str.indexOf('-->', cursor)
-  const type = 'comment'
-  if (commentEnd === -1) {
-    // there is only the comment left
-    const content = str.slice(cursor)
-    state.cursor = str.length
-    state.tokens.push({type, content})
-    return
+  const {str, position} = state
+  const start = copyPosition(position)
+  feedPosition(position, str, 4) // "<!--".length
+  let contentEnd = str.indexOf('-->', position.index)
+  let commentEnd = contentEnd + 3 // "-->".length
+  if (contentEnd === -1) {
+    contentEnd = commentEnd = str.length
   }
 
-  const content = str.slice(cursor, commentEnd)
-  state.cursor = commentEnd + 3 // "-->".length
-  state.tokens.push({type, content})
+  const content = str.slice(position.index, contentEnd)
+  jumpPosition(position, str, commentEnd)
+  state.tokens.push({
+    type: 'comment',
+    content,
+    position: {
+      start,
+      end: copyPosition(position)
+    }
+  })
 }
 
 export function lexTag (state) {
-  const {str} = state
+  const {str, position} = state
   {
-    const secondChar = str.charAt(state.cursor + 1)
+    const secondChar = str.charAt(position.index + 1)
     const close = secondChar === '/'
-    state.tokens.push({type: 'tag-start', close})
-    state.cursor += close ? 2 : 1
+    const start = copyPosition(position)
+    feedPosition(position, str, close ? 2 : 1)
+    state.tokens.push({type: 'tag-start', close, position: {start}})
   }
   const tagName = lexTagName(state)
   lexTagAttributes(state)
   {
-    const firstChar = str.charAt(state.cursor)
+    const firstChar = str.charAt(position.index)
     const close = firstChar === '/'
-    state.tokens.push({type: 'tag-end', close})
-    state.cursor += close ? 2 : 1
+    feedPosition(position, str, close ? 2 : 1)
+    const end = copyPosition(position)
+    state.tokens.push({type: 'tag-end', close, position: {end}})
   }
   return tagName
 }
@@ -111,9 +153,9 @@ export function isWhitespaceChar (char) {
 }
 
 export function lexTagName (state) {
-  const {str, cursor} = state
+  const {str, position} = state
   const len = str.length
-  let start = cursor
+  let start = position.index
   while (start < len) {
     const char = str.charAt(start)
     const isTagChar = !(isWhitespaceChar(char) || char === '/' || char === '>')
@@ -129,15 +171,18 @@ export function lexTagName (state) {
     end++
   }
 
-  state.cursor = end
+  jumpPosition(position, str, end)
   const tagName = str.slice(start, end)
-  state.tokens.push({type: 'tag', content: tagName})
+  state.tokens.push({
+    type: 'tag',
+    content: tagName
+  })
   return tagName
 }
 
 export function lexTagAttributes (state) {
-  const {str, tokens} = state
-  let cursor = state.cursor
+  const {str, position, tokens} = state
+  let cursor = position.index
   let quote = null // null, single-, or double-quote
   let wordBegin = cursor // index of word start
   const words = [] // "key", "key=value", "key='value'", etc
@@ -180,7 +225,7 @@ export function lexTagAttributes (state) {
 
     cursor++
   }
-  state.cursor = cursor
+  jumpPosition(position, str, cursor)
 
   const wLen = words.length
   const type = 'attribute'
@@ -224,10 +269,13 @@ export function lexTagAttributes (state) {
   }
 }
 
+const push = [].push
+
 export function lexSkipTag (tagName, state) {
-  const {str, cursor, tokens} = state
+  const {str, position, tokens} = state
+  const safeTagName = tagName.toLowerCase()
   const len = str.length
-  let index = cursor
+  let index = position.index
   while (index < len) {
     const nextTag = str.indexOf('</', index)
     if (nextTag === -1) {
@@ -235,21 +283,30 @@ export function lexSkipTag (tagName, state) {
       break
     }
 
-    const tagState = {str, cursor: nextTag + 2, tokens: []}
-    const name = lexTagName(tagState)
-    const safeTagName = tagName.toLowerCase()
+    const tagStartPosition = copyPosition(position)
+    jumpPosition(tagStartPosition, str, nextTag)
+    const tagState = {str, position: tagStartPosition, tokens: []}
+    const name = lexTag(tagState)
     if (safeTagName !== name.toLowerCase()) {
-      index = tagState.cursor
+      index = tagState.position.index
       continue
     }
 
-    const content = str.slice(cursor, nextTag)
-    tokens.push({type: 'text', content})
-    const openTag = {type: 'tag-start', close: true}
-    const closeTag = {type: 'tag-end', close: false}
-    lexTagAttributes(tagState)
-    tokens.push(openTag, ...tagState.tokens, closeTag)
-    state.cursor = tagState.cursor + 1
+    if (nextTag !== position.index) {
+      const textStart = copyPosition(position)
+      jumpPosition(position, str, nextTag)
+      tokens.push({
+        type: 'text',
+        content: str.slice(textStart.index, nextTag),
+        position: {
+          start: textStart,
+          end: copyPosition(position)
+        }
+      })
+    }
+
+    push.apply(tokens, tagState.tokens)
+    jumpPosition(position, str, tagState.position.index)
     break
   }
 }
