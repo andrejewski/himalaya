@@ -13,7 +13,8 @@ export const parseDefaults = {
   voidTags,
   closingTags,
   childlessTags,
-  closingTagAncestorBreakers
+  closingTagAncestorBreakers,
+  includePositions: false
 }
 
 export function parse (str, options = parseDefaults) {
