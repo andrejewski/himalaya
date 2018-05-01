@@ -131,6 +131,18 @@ const json = parse(html)
 fs.writeFileSync('/webpage.html', stringify(json))
 ```
 
+## Walking through the tree
+Himalaya provides a `walk` method. It allows you to recursively visit every node of the tree.
+
+```js
+import {parse, walk} from 'himalaya'
+
+const tree = parse('<div>foo</div>')
+walk(tree, node => {
+  console.log(node)
+})
+```
+
 ## Why "Himalaya"?
 
 [First, my friends weren't helpful.](https://twitter.com/compooter/status/597908517132042240) Except Josh, Josh had my back.
