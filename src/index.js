@@ -14,7 +14,8 @@ export const parseDefaults = {
   closingTags,
   childlessTags,
   closingTagAncestorBreakers,
-  includePositions: false
+  includePositions: false,
+  tagNameToLowerCase: true
 }
 
 export function parse (str, options = parseDefaults) {

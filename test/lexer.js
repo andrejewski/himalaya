@@ -344,7 +344,7 @@ test('lexTagAttributes should handle incomplete attributes', t => {
 test('lexSkipTag should tokenize as text until the matching tag name', t => {
   const str = 'abcd<test><h1>Test case</h1></test><x>'
   const finish = str.indexOf('<x>')
-  const state = {str, position: ps(10), tokens: []}
+  const state = {str, position: ps(10), tokens: [], options: {tagNameToLowerCase: false}}
   lexSkipTag('test', state)
   t.is(state.position.index, finish)
   t.deepEqual(state.tokens, [
@@ -358,7 +358,7 @@ test('lexSkipTag should tokenize as text until the matching tag name', t => {
 test('lexSkipTag should stop at the case-insensitive matching tag name', t => {
   const str = '<tEsT>proving <???> the point</TeSt><x>'
   const finish = str.indexOf('<x>')
-  const state = {str, position: ps(6), tokens: []}
+  const state = {str, position: ps(6), tokens: [], options: {tagNameToLowerCase: true}}
   lexSkipTag('tEsT', state)
   t.is(state.position.index, finish)
   t.deepEqual(state.tokens, [
@@ -371,7 +371,7 @@ test('lexSkipTag should stop at the case-insensitive matching tag name', t => {
 
 test('lexSkipTag should auto-close if the end tag is not found', t => {
   const str = '<script>This never ends'
-  const state = {str, position: ps(8), tokens: []}
+  const state = {str, position: ps(8), tokens: [], options: {tagNameToLowerCase: true}}
   lexSkipTag('script', state)
   t.is(state.position.index, str.length)
   t.deepEqual(state.tokens, [
@@ -381,7 +381,7 @@ test('lexSkipTag should auto-close if the end tag is not found', t => {
 
 test('lexSkipTag should handle finding a stray "</" [resilience]', t => {
   const str = '<script>proving </nothing></script>'
-  const state = {str, position: ps(8), tokens: []}
+  const state = {str, position: ps(8), tokens: [], options: {tagNameToLowerCase: true}}
   lexSkipTag('script', state)
   t.is(state.position.index, str.length)
   t.deepEqual(state.tokens, [
@@ -394,7 +394,7 @@ test('lexSkipTag should handle finding a stray "</" [resilience]', t => {
 
 test('lexSkipTag should not add an empty inner text node', t => {
   const str = '<script></script>'
-  const state = {str, position: ps(8), tokens: []}
+  const state = {str, position: ps(8), tokens: [], options: {tagNameToLowerCase: true}}
   lexSkipTag('script', state)
   t.is(state.position.index, str.length)
   t.deepEqual(state.tokens, [

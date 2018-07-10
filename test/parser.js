@@ -6,11 +6,12 @@ function ps (index) {
   return { index, line: 0, column: index }
 }
 
-const lexerOptions = { childlessTags: [] }
+const lexerOptions = { childlessTags: [], tagNameToLowerCase: true }
 const parserOptions = {
   voidTags: [],
   closingTags: [],
-  closingTagAncestorBreakers: {}
+  closingTagAncestorBreakers: {},
+  tagNameToLowerCase: true
 }
 
 test('parser() should return nodes', t => {

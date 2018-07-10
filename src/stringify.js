@@ -21,10 +21,11 @@ export function toHTML (tree, options) {
       return `<!--${node.content}-->`
     }
     const {tagName, attributes, children} = node
-    const isSelfClosing = arrayIncludes(options.voidTags, tagName.toLowerCase())
+    const safeTagName = options.tagNameToLowerCase ? tagName.toLowerCase() : tagName
+    const isSelfClosing = arrayIncludes(options.voidTags, safeTagName)
     return isSelfClosing
-      ? `<${tagName}${formatAttributes(attributes)}>`
-      : `<${tagName}${formatAttributes(attributes)}>${toHTML(children, options)}</${tagName}>`
+      ? `<${safeTagName}${formatAttributes(attributes)}>`
+      : `<${safeTagName}${formatAttributes(attributes)}>${toHTML(children, options)}</${safeTagName}>`
   }).join('')
 }
 

@@ -20,7 +20,7 @@ export function format (nodes, options) {
     const outputNode = type === 'element'
       ? {
         type,
-        tagName: node.tagName.toLowerCase(),
+        tagName: options.tagNameToLowerCase ? node.tagName.toLowerCase() : node.tagName,
         attributes: formatAttributes(node.attributes),
         children: format(node.children, options)
       }
