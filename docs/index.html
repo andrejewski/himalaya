@@ -98,6 +98,9 @@
         margin: 0;
         padding: 0;
       }
+      .copy-output {
+        cursor:pointer;
+      }
     </style>
   </head>
   <body>
@@ -127,6 +130,7 @@
               <input id='positions' type='checkbox' />
               <span>Include positions</span>
             </label>
+            <label class='copy-output' onclick='copyOutput()'>Copy</label>
           </div>
           <div class='pane pane-output'>
             <pre id='output'></pre>
@@ -176,6 +180,18 @@
         }
 
         $('#output').innerText = JSON.stringify(code, null, 2)
+      }
+      
+      function copyOutput() {
+        var output = document.getElementById('output');
+        var copy = document.createElement('textarea');
+        copy.setAttribute('id', 'clipboard');
+        copy.innerHTML = output.innerText;
+        document.body.appendChild(copy);
+        copy = document.getElementById('clipboard');
+        copy.select();
+        document.execCommand('copy');
+        document.body.removeChild(copy);
       }
 
       $('#source').onkeyup = updateOutput
