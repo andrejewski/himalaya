@@ -44,7 +44,7 @@
     "pre-commit": "^1.2.2",
     "pre-push": "^0.1.1",
     "source-map-support": "^0.5.0",
-    "standard": "^11.0.0",
+    "standard": "^14.3.3",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0"
   },
