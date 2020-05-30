@@ -1,4 +1,4 @@
-# Himalaya
+# Himalay
 
 > Parse HTML into JSON
 
