@@ -1,6 +1,6 @@
 # Himalaya
 
-> Parse HTML into JSON
+> Parse HTML into JSON logger an amazing project
 
 [![npm](https://img.shields.io/npm/v/himalaya.svg)](https://www.npmjs.com/package/himalaya)
 [![Build Status](https://travis-ci.org/andrejewski/himalaya.svg?branch=master)](https://travis-ci.org/andrejewski/himalaya)
