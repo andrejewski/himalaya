@@ -9,8 +9,21 @@ export const childlessTags = ['style', 'script', 'template']
   For example: <p>Outer<p>Inner is <p>Outer</p><p>Inner</p>
 */
 export const closingTags = [
-  'html', 'head', 'body', 'p', 'dt', 'dd', 'li', 'option',
-  'thead', 'th', 'tbody', 'tr', 'td', 'tfoot', 'colgroup'
+  'html',
+  'head',
+  'body',
+  'p',
+  'dt',
+  'dd',
+  'li',
+  'option',
+  'thead',
+  'th',
+  'tbody',
+  'tr',
+  'td',
+  'tfoot',
+  'colgroup',
 ]
 
 /*
@@ -28,7 +41,7 @@ export const closingTagAncestorBreakers = {
   thead: ['table'],
   tfoot: ['table'],
   tr: ['table'],
-  td: ['table']
+  td: ['table'],
 }
 
 /*
@@ -36,7 +49,21 @@ export const closingTagAncestorBreakers = {
   For example: <img> does not need </img>
 */
 export const voidTags = [
-  '!doctype', 'area', 'base', 'br', 'col', 'command',
-  'embed', 'hr', 'img', 'input', 'keygen', 'link',
-  'meta', 'param', 'source', 'track', 'wbr'
+  '!doctype',
+  'area',
+  'base',
+  'br',
+  'col',
+  'command',
+  'embed',
+  'hr',
+  'img',
+  'input',
+  'keygen',
+  'link',
+  'meta',
+  'param',
+  'source',
+  'track',
+  'wbr',
 ]

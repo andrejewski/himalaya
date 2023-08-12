@@ -1,8 +1,8 @@
 language: node_js
 node_js:
-- node
-- '6'
-- '4'
+  - node
+  - '6'
+  - '4'
 script: npm run test-ci
 deploy:
   provider: npm

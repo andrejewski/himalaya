@@ -2,7 +2,7 @@ import test from 'ava'
 import parser from '../lib/parser'
 import lexer from '../lib/lexer'
 
-function ps (index) {
+function ps(index) {
   return { index, line: 0, column: index }
 }
 
@@ -10,10 +10,10 @@ const lexerOptions = { childlessTags: [] }
 const parserOptions = {
   voidTags: [],
   closingTags: [],
-  closingTagAncestorBreakers: {}
+  closingTagAncestorBreakers: {},
 }
 
-test('parser() should return nodes', t => {
+test('parser() should return nodes', (t) => {
   const str = '<h1>Hello world</h1>'
   const tokens = lexer(str, lexerOptions)
   const nodes = parser(tokens, parserOptions)
@@ -28,19 +28,19 @@ test('parser() should return nodes', t => {
           content: 'Hello world',
           position: {
             start: ps(4),
-            end: ps(15)
-          }
-        }
+            end: ps(15),
+          },
+        },
       ],
       position: {
         start: ps(0),
-        end: ps(str.length)
-      }
-    }
+        end: ps(str.length),
+      },
+    },
   ])
 })
 
-test('parser() should not nest within void tags', t => {
+test('parser() should not nest within void tags', (t) => {
   const str = '<div>abc<img/>def</div>'
   const tokens = lexer(str, lexerOptions)
   const nodes = parser(tokens, { voidTags: 'img', closingTags: [] })
@@ -55,8 +55,8 @@ test('parser() should not nest within void tags', t => {
           content: 'abc',
           position: {
             start: ps(5),
-            end: ps(8)
-          }
+            end: ps(8),
+          },
         },
         {
           type: 'element',
@@ -65,32 +65,32 @@ test('parser() should not nest within void tags', t => {
           children: [],
           position: {
             start: ps(8),
-            end: ps(14)
-          }
+            end: ps(14),
+          },
         },
         {
           type: 'text',
           content: 'def',
           position: {
             start: ps(14),
-            end: ps(17)
-          }
-        }
+            end: ps(17),
+          },
+        },
       ],
       position: {
         start: ps(0),
-        end: ps(str.length)
-      }
-    }
+        end: ps(str.length),
+      },
+    },
   ])
 })
 
-test('parser() should handle optional-close tags', t => {
+test('parser() should handle optional-close tags', (t) => {
   {
     const parserOptions = {
       voidTags: [],
       closingTags: ['p'],
-      closingTagAncestorBreakers: {}
+      closingTagAncestorBreakers: {},
     }
     const str = '<p>This is one<p>This is two</p>'
     const tokens = lexer(str, lexerOptions)
@@ -106,14 +106,14 @@ test('parser() should handle optional-close tags', t => {
             content: 'This is one',
             position: {
               start: ps(3),
-              end: ps(14)
-            }
-          }
+              end: ps(14),
+            },
+          },
         ],
         position: {
           start: ps(0),
-          end: ps(14)
-        }
+          end: ps(14),
+        },
       },
       {
         type: 'element',
@@ -125,15 +125,15 @@ test('parser() should handle optional-close tags', t => {
             content: 'This is two',
             position: {
               start: ps(17),
-              end: ps(28)
-            }
-          }
+              end: ps(28),
+            },
+          },
         ],
         position: {
           start: ps(14),
-          end: ps(str.length)
-        }
-      }
+          end: ps(str.length),
+        },
+      },
     ])
   }
 
@@ -141,7 +141,7 @@ test('parser() should handle optional-close tags', t => {
     const parserOptions = {
       voidTags: [],
       closingTags: ['p', 'span'],
-      closingTagAncestorBreakers: {}
+      closingTagAncestorBreakers: {},
     }
     const str = '<p>This is one <span>okay<p>This is two</p>'
     const tokens = lexer(str, lexerOptions)
@@ -157,8 +157,8 @@ test('parser() should handle optional-close tags', t => {
             content: 'This is one ',
             position: {
               start: ps(3),
-              end: ps(15)
-            }
+              end: ps(15),
+            },
           },
           {
             type: 'element',
@@ -170,20 +170,20 @@ test('parser() should handle optional-close tags', t => {
                 content: 'okay',
                 position: {
                   start: ps(21),
-                  end: ps(25)
-                }
-              }
+                  end: ps(25),
+                },
+              },
             ],
             position: {
               start: ps(15),
-              end: ps(25)
-            }
-          }
+              end: ps(25),
+            },
+          },
         ],
         position: {
           start: ps(0),
-          end: ps(25)
-        }
+          end: ps(25),
+        },
       },
       {
         type: 'element',
@@ -195,24 +195,24 @@ test('parser() should handle optional-close tags', t => {
             content: 'This is two',
             position: {
               start: ps(28),
-              end: ps(39)
-            }
-          }
+              end: ps(39),
+            },
+          },
         ],
         position: {
           start: ps(25),
-          end: ps(43)
-        }
-      }
+          end: ps(43),
+        },
+      },
     ])
   }
 })
 
-test('parser() should auto-close unmatched child tags', t => {
+test('parser() should auto-close unmatched child tags', (t) => {
   const parserOptions = {
     voidTags: [],
     closingTags: [],
-    closingTagAncestorBreakers: {}
+    closingTagAncestorBreakers: {},
   }
   const str = '<div>This is <b>one <span>okay</div>'
   const tokens = lexer(str, lexerOptions)
@@ -224,7 +224,7 @@ test('parser() should auto-close unmatched child tags', t => {
       attributes: [],
       position: {
         start: ps(0),
-        end: ps(36)
+        end: ps(36),
       },
       children: [
         {
@@ -232,8 +232,8 @@ test('parser() should auto-close unmatched child tags', t => {
           content: 'This is ',
           position: {
             start: ps(5),
-            end: ps(13)
-          }
+            end: ps(13),
+          },
         },
         {
           type: 'element',
@@ -241,7 +241,7 @@ test('parser() should auto-close unmatched child tags', t => {
           attributes: [],
           position: {
             start: ps(13),
-            end: ps(30)
+            end: ps(30),
           },
           children: [
             {
@@ -249,8 +249,8 @@ test('parser() should auto-close unmatched child tags', t => {
               content: 'one ',
               position: {
                 start: ps(16),
-                end: ps(20)
-              }
+                end: ps(20),
+              },
             },
             {
               type: 'element',
@@ -258,7 +258,7 @@ test('parser() should auto-close unmatched child tags', t => {
               attributes: [],
               position: {
                 start: ps(20),
-                end: ps(30)
+                end: ps(30),
               },
               children: [
                 {
@@ -266,25 +266,25 @@ test('parser() should auto-close unmatched child tags', t => {
                   content: 'okay',
                   position: {
                     start: ps(26),
-                    end: ps(30)
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
+                    end: ps(30),
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
   ])
 })
 
-test('parser() should handle empty token arrays', t => {
+test('parser() should handle empty token arrays', (t) => {
   const tokens = []
   const nodes = parser(tokens, parserOptions)
   t.deepEqual(nodes, [])
 })
 
-test('parser() should report the element attributes', t => {
+test('parser() should report the element attributes', (t) => {
   const str = '<div class="cake" data-key="abc" disabled></div>'
   const tokens = lexer(str, lexerOptions)
   const nodes = parser(tokens, parserOptions)
@@ -295,14 +295,14 @@ test('parser() should report the element attributes', t => {
       attributes: ['class="cake"', 'data-key="abc"', 'disabled'],
       position: {
         start: ps(0),
-        end: ps(48)
+        end: ps(48),
       },
-      children: []
-    }
+      children: [],
+    },
   ])
 })
 
-test('parser() should handle unclosed elements', t => {
+test('parser() should handle unclosed elements', (t) => {
   const str = '<div>abc'
   const tokens = lexer(str, lexerOptions)
   const nodes = parser(tokens, parserOptions)
@@ -313,7 +313,7 @@ test('parser() should handle unclosed elements', t => {
       attributes: [],
       position: {
         start: ps(0),
-        end: ps(str.length)
+        end: ps(str.length),
       },
       children: [
         {
@@ -321,15 +321,15 @@ test('parser() should handle unclosed elements', t => {
           content: 'abc',
           position: {
             start: ps(5),
-            end: ps(str.length)
-          }
-        }
-      ]
-    }
+            end: ps(str.length),
+          },
+        },
+      ],
+    },
   ])
 })
 
-test('parser() should preserve case-sensitive tag names', t => {
+test('parser() should preserve case-sensitive tag names', (t) => {
   const str = '<You-Know-8>'
   const tokens = lexer(str, lexerOptions)
   const nodes = parser(tokens, parserOptions)
@@ -340,14 +340,14 @@ test('parser() should preserve case-sensitive tag names', t => {
       attributes: [],
       position: {
         start: ps(0),
-        end: ps(str.length)
+        end: ps(str.length),
       },
-      children: []
-    }
+      children: [],
+    },
   ])
 })
 
-test('parser() should match by case-insensitive tags', t => {
+test('parser() should match by case-insensitive tags', (t) => {
   const str = '<div>abc</DIV>def'
   const tokens = lexer(str, lexerOptions)
   const nodes = parser(tokens, parserOptions)
@@ -358,7 +358,7 @@ test('parser() should match by case-insensitive tags', t => {
       attributes: [],
       position: {
         start: ps(0),
-        end: ps(14)
+        end: ps(14),
       },
       children: [
         {
@@ -366,23 +366,23 @@ test('parser() should match by case-insensitive tags', t => {
           content: 'abc',
           position: {
             start: ps(5),
-            end: ps(8)
-          }
-        }
-      ]
+            end: ps(8),
+          },
+        },
+      ],
     },
     {
       type: 'text',
       content: 'def',
       position: {
         start: ps(14),
-        end: ps(17)
-      }
-    }
+        end: ps(17),
+      },
+    },
   ])
 })
 
-test('parser() should handle ancestor breaker special case (#39)', t => {
+test('parser() should handle ancestor breaker special case (#39)', (t) => {
   /*
     To summarize, this special case is where a <ul|ol|menu> is
     encountered within an <li>. The default behavior for <li>s
@@ -400,8 +400,8 @@ test('parser() should handle ancestor breaker special case (#39)', t => {
       voidTags: [],
       closingTags: ['li'],
       closingTagAncestorBreakers: {
-        li: ['ul']
-      }
+        li: ['ul'],
+      },
     })
 
     t.deepEqual(nodes, [
@@ -411,7 +411,7 @@ test('parser() should handle ancestor breaker special case (#39)', t => {
         attributes: [],
         position: {
           start: ps(0),
-          end: ps(42)
+          end: ps(42),
         },
         children: [
           {
@@ -420,7 +420,7 @@ test('parser() should handle ancestor breaker special case (#39)', t => {
             attributes: [],
             position: {
               start: ps(4),
-              end: ps(37)
+              end: ps(37),
             },
             children: [
               {
@@ -428,8 +428,8 @@ test('parser() should handle ancestor breaker special case (#39)', t => {
                 content: 'abc',
                 position: {
                   start: ps(8),
-                  end: ps(11)
-                }
+                  end: ps(11),
+                },
               },
               {
                 type: 'element',
@@ -437,7 +437,7 @@ test('parser() should handle ancestor breaker special case (#39)', t => {
                 attributes: [],
                 position: {
                   start: ps(11),
-                  end: ps(32)
+                  end: ps(32),
                 },
                 children: [
                   {
@@ -446,7 +446,7 @@ test('parser() should handle ancestor breaker special case (#39)', t => {
                     attributes: [],
                     position: {
                       start: ps(15),
-                      end: ps(27)
+                      end: ps(27),
                     },
                     children: [
                       {
@@ -454,17 +454,17 @@ test('parser() should handle ancestor breaker special case (#39)', t => {
                         content: 'def',
                         position: {
                           start: ps(19),
-                          end: ps(22)
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+                          end: ps(22),
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
     ])
   }
 
@@ -475,8 +475,8 @@ test('parser() should handle ancestor breaker special case (#39)', t => {
       voidTags: [],
       closingTags: ['li'],
       closingTagAncestorBreakers: {
-        li: ['ul']
-      }
+        li: ['ul'],
+      },
     })
 
     t.deepEqual(nodes, [
@@ -486,7 +486,7 @@ test('parser() should handle ancestor breaker special case (#39)', t => {
         attributes: [],
         position: {
           start: ps(0),
-          end: ps(55)
+          end: ps(55),
         },
         children: [
           {
@@ -495,7 +495,7 @@ test('parser() should handle ancestor breaker special case (#39)', t => {
             attributes: [],
             position: {
               start: ps(4),
-              end: ps(50)
+              end: ps(50),
             },
             children: [
               {
@@ -503,8 +503,8 @@ test('parser() should handle ancestor breaker special case (#39)', t => {
                 content: 'abc',
                 position: {
                   start: ps(8),
-                  end: ps(11)
-                }
+                  end: ps(11),
+                },
               },
               {
                 type: 'element',
@@ -512,7 +512,7 @@ test('parser() should handle ancestor breaker special case (#39)', t => {
                 attributes: [],
                 position: {
                   start: ps(11),
-                  end: ps(45)
+                  end: ps(45),
                 },
                 children: [
                   {
@@ -521,7 +521,7 @@ test('parser() should handle ancestor breaker special case (#39)', t => {
                     attributes: [],
                     position: {
                       start: ps(15),
-                      end: ps(40)
+                      end: ps(40),
                     },
                     children: [
                       {
@@ -530,7 +530,7 @@ test('parser() should handle ancestor breaker special case (#39)', t => {
                         attributes: [],
                         position: {
                           start: ps(21),
-                          end: ps(33)
+                          end: ps(33),
                         },
                         children: [
                           {
@@ -538,19 +538,19 @@ test('parser() should handle ancestor breaker special case (#39)', t => {
                             content: 'def',
                             position: {
                               start: ps(25),
-                              end: ps(28)
-                            }
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+                              end: ps(28),
+                            },
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
     ])
   }
 
@@ -561,8 +561,8 @@ test('parser() should handle ancestor breaker special case (#39)', t => {
       voidTags: [],
       closingTags: ['li'],
       closingTagAncestorBreakers: {
-        li: ['ul']
-      }
+        li: ['ul'],
+      },
     })
 
     t.deepEqual(nodes, [
@@ -572,7 +572,7 @@ test('parser() should handle ancestor breaker special case (#39)', t => {
         attributes: [],
         position: {
           start: ps(0),
-          end: ps(49)
+          end: ps(49),
         },
         children: [
           {
@@ -581,7 +581,7 @@ test('parser() should handle ancestor breaker special case (#39)', t => {
             attributes: [],
             position: {
               start: ps(4),
-              end: ps(44)
+              end: ps(44),
             },
             children: [
               {
@@ -589,8 +589,8 @@ test('parser() should handle ancestor breaker special case (#39)', t => {
                 content: 'abc',
                 position: {
                   start: ps(8),
-                  end: ps(11)
-                }
+                  end: ps(11),
+                },
               },
               {
                 type: 'element',
@@ -598,7 +598,7 @@ test('parser() should handle ancestor breaker special case (#39)', t => {
                 attributes: [],
                 position: {
                   start: ps(11),
-                  end: ps(39)
+                  end: ps(39),
                 },
                 children: [
                   {
@@ -607,7 +607,7 @@ test('parser() should handle ancestor breaker special case (#39)', t => {
                     attributes: [],
                     position: {
                       start: ps(15),
-                      end: ps(22)
+                      end: ps(22),
                     },
                     children: [
                       {
@@ -615,10 +615,10 @@ test('parser() should handle ancestor breaker special case (#39)', t => {
                         content: 'def',
                         position: {
                           start: ps(19),
-                          end: ps(22)
-                        }
-                      }
-                    ]
+                          end: ps(22),
+                        },
+                      },
+                    ],
                   },
                   {
                     type: 'element',
@@ -626,7 +626,7 @@ test('parser() should handle ancestor breaker special case (#39)', t => {
                     attributes: [],
                     position: {
                       start: ps(22),
-                      end: ps(34)
+                      end: ps(34),
                     },
                     children: [
                       {
@@ -634,22 +634,22 @@ test('parser() should handle ancestor breaker special case (#39)', t => {
                         content: 'ghi',
                         position: {
                           start: ps(26),
-                          end: ps(29)
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+                          end: ps(29),
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
     ])
   }
 })
 
-test('parser() should handle nested tables', t => {
+test('parser() should handle nested tables', (t) => {
   const str =
     '<table><tbody><tr><td><table><tbody><tr><td></td></tr></tbody></table></td></tr></tbody></table>'
   const tokens = lexer(str, lexerOptions)
@@ -659,8 +659,8 @@ test('parser() should handle nested tables', t => {
     closingTagAncestorBreakers: {
       tbody: ['table'],
       tr: ['table'],
-      td: ['table']
-    }
+      td: ['table'],
+    },
   })
 
   t.deepEqual(nodes, [
@@ -670,7 +670,7 @@ test('parser() should handle nested tables', t => {
       attributes: [],
       position: {
         start: ps(0),
-        end: ps(96)
+        end: ps(96),
       },
       children: [
         {
@@ -679,7 +679,7 @@ test('parser() should handle nested tables', t => {
           attributes: [],
           position: {
             start: ps(7),
-            end: ps(88)
+            end: ps(88),
           },
           children: [
             {
@@ -688,7 +688,7 @@ test('parser() should handle nested tables', t => {
               attributes: [],
               position: {
                 start: ps(14),
-                end: ps(80)
+                end: ps(80),
               },
               children: [
                 {
@@ -697,7 +697,7 @@ test('parser() should handle nested tables', t => {
                   attributes: [],
                   position: {
                     start: ps(18),
-                    end: ps(75)
+                    end: ps(75),
                   },
                   children: [
                     {
@@ -706,7 +706,7 @@ test('parser() should handle nested tables', t => {
                       attributes: [],
                       position: {
                         start: ps(22),
-                        end: ps(70)
+                        end: ps(70),
                       },
                       children: [
                         {
@@ -715,7 +715,7 @@ test('parser() should handle nested tables', t => {
                           attributes: [],
                           position: {
                             start: ps(29),
-                            end: ps(62)
+                            end: ps(62),
                           },
                           children: [
                             {
@@ -724,7 +724,7 @@ test('parser() should handle nested tables', t => {
                               attributes: [],
                               position: {
                                 start: ps(36),
-                                end: ps(54)
+                                end: ps(54),
                               },
                               children: [
                                 {
@@ -733,28 +733,28 @@ test('parser() should handle nested tables', t => {
                                   attributes: [],
                                   position: {
                                     start: ps(40),
-                                    end: ps(49)
+                                    end: ps(49),
                                   },
-                                  children: []
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
+                                  children: [],
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
   ])
 })
 
-test('parser() should ignore unnecessary closing tags', t => {
+test('parser() should ignore unnecessary closing tags', (t) => {
   /*
     In this case the </i> bit is unnecessary and should
     not be represented in the output nor interfere with the stack.
@@ -768,8 +768,8 @@ test('parser() should ignore unnecessary closing tags', t => {
       content: 'x',
       position: {
         start: ps(4),
-        end: ps(str.length)
-      }
-    }
+        end: ps(str.length),
+      },
+    },
   ])
 })

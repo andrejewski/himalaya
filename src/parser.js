@@ -1,13 +1,13 @@
-import {arrayIncludes} from './compat'
+import { arrayIncludes } from './compat'
 
-export default function parser (tokens, options) {
-  const root = {tagName: null, children: []}
-  const state = {tokens, options, cursor: 0, stack: [root]}
+export default function parser(tokens, options) {
+  const root = { tagName: null, children: [] }
+  const state = { tokens, options, cursor: 0, stack: [root] }
   parse(state)
   return root.children
 }
 
-export function hasTerminalParent (tagName, stack, terminals) {
+export function hasTerminalParent(tagName, stack, terminals) {
   const tagParents = terminals[tagName]
   if (tagParents) {
     let currentIndex = stack.length - 1
@@ -25,7 +25,12 @@ export function hasTerminalParent (tagName, stack, terminals) {
   return false
 }
 
-export function rewindStack (stack, newLength, childrenEndPosition, endPosition) {
+export function rewindStack(
+  stack,
+  newLength,
+  childrenEndPosition,
+  endPosition,
+) {
   stack[newLength].position.end = endPosition
   for (let i = newLength + 1, len = stack.length; i < len; i++) {
     stack[i].position.end = childrenEndPosition
@@ -33,12 +38,12 @@ export function rewindStack (stack, newLength, childrenEndPosition, endPosition)
   stack.splice(newLength)
 }
 
-export function parse (state) {
-  const {tokens, options} = state
-  let {stack} = state
+export function parse(state) {
+  const { tokens, options } = state
+  let { stack } = state
   let nodes = stack[stack.length - 1].children
   const len = tokens.length
-  let {cursor} = state
+  let { cursor } = state
   while (cursor < len) {
     const token = tokens[cursor]
     if (token.type !== 'tag-start') {
@@ -65,7 +70,12 @@ export function parse (state) {
         cursor++
       }
       if (shouldRewind) {
-        rewindStack(stack, index, token.position.start, tokens[cursor - 1].position.end)
+        rewindStack(
+          stack,
+          index,
+          token.position.start,
+          tokens[cursor - 1].position.end,
+        )
         break
       } else {
         continue
@@ -85,7 +95,12 @@ export function parse (state) {
       let currentIndex = stack.length - 1
       while (currentIndex > 0) {
         if (tagName === stack[currentIndex].tagName) {
-          rewindStack(stack, currentIndex, token.position.start, token.position.start)
+          rewindStack(
+            stack,
+            currentIndex,
+            token.position.start,
+            token.position.start,
+          )
           const previousIndex = currentIndex - 1
           nodes = stack[previousIndex].children
           break
@@ -107,21 +122,23 @@ export function parse (state) {
     const children = []
     const position = {
       start: token.position.start,
-      end: attrToken.position.end
+      end: attrToken.position.end,
     }
     const elementNode = {
       type: 'element',
       tagName: tagToken.content,
       attributes,
       children,
-      position
+      position,
     }
     nodes.push(elementNode)
 
-    const hasChildren = !(attrToken.close || arrayIncludes(options.voidTags, tagName))
+    const hasChildren = !(
+      attrToken.close || arrayIncludes(options.voidTags, tagName)
+    )
     if (hasChildren) {
-      const size = stack.push({tagName, children, position})
-      const innerState = {tokens, options, cursor, stack}
+      const size = stack.push({ tagName, children, position })
+      const innerState = { tokens, options, cursor, stack }
       parse(innerState)
       cursor = innerState.cursor
       const rewoundInElement = stack.length === size
