@@ -62,7 +62,7 @@
       "src/*.js"
     ],
     "require": [
-      "babel-register"
+      "@babel/register"
     ],
     "sourceMap": false,
     "instrument": false,
@@ -72,10 +72,10 @@
     ]
   },
   "pre-commit": [
-    "prepare"
+    "pre-commit"
   ],
   "pre-push": [
-    "prepare"
+    "pre-commit"
   ],
   "prettier": {
     "semi": false,
@@ -87,11 +87,11 @@
   },
   "scripts": {
     "build": "gulp build",
-    "coveralls": "npm run report && nyc report --reporter=text-lcov | coveralls",
+    "coverage": "NODE_ENV=nyc nyc npm test && nyc report --reporter=lcovonly",
+    "format": "fixpack && prettier '**/*.{js,yml,yaml}' --write --log-level warn",
+    "format-check": "prettier --check",
     "himalaya": "./bin/himalaya.js",
-    "prepare": "npm test && npm run build",
-    "report": "NODE_ENV=nyc nyc npm test",
-    "test": "fixpack && prettier '**/*.{js,yml,yaml}' --write --log-level warn && gulp --silent && ava",
-    "test-ci": "npm run prepare"
+    "pre-commit": "npm run format && npm test && npm run build",
+    "test": "gulp buildSrc --silent && ava"
   }
 }

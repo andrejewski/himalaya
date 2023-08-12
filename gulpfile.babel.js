@@ -55,6 +55,5 @@ gulp.task(
   }),
 )
 
-gulp.task('build', gulp.series('cleanLib', 'buildSrc', 'buildDist'))
-
+gulp.task('build', gulp.series('buildSrc', 'buildDist'))
 gulp.task('default', gulp.series('build'))
