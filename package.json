@@ -89,7 +89,7 @@
     "build": "gulp build",
     "coverage": "NODE_ENV=nyc nyc npm test && nyc report --reporter=lcovonly",
     "format": "fixpack && prettier '**/*.{js,yml,yaml}' --write --log-level warn",
-    "format-check": "prettier --check",
+    "format-check": "prettier 'src/**/*.{js,yml,yaml}' --check",
     "himalaya": "./bin/himalaya.js",
     "pre-commit": "npm run format && npm test && npm run build",
     "test": "gulp buildSrc --silent && ava"
