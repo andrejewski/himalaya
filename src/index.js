@@ -15,14 +15,15 @@ export const parseDefaults = {
   childlessTags,
   closingTagAncestorBreakers,
   includePositions: false,
+  preferDoubleQuoteAttributes: false,
 }
 
 export function parse(str, options = parseDefaults) {
-  const tokens = lexer(str, options)
-  const nodes = parser(tokens, options)
-  return format(nodes, options)
+  const tokens = lexer(str, { ...parseDefaults, ...options })
+  const nodes = parser(tokens, { ...parseDefaults, ...options })
+  return format(nodes, { ...parseDefaults, ...options })
 }
 
 export function stringify(ast, options = parseDefaults) {
-  return toHTML(ast, options)
+  return toHTML(ast, { ...parseDefaults, ...options })
 }

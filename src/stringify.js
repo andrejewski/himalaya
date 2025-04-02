@@ -1,13 +1,19 @@
 import { arrayIncludes } from './compat'
 
-export function formatAttributes(attributes) {
+export function formatAttributes(attributes, preferDoubleQuoteAttributes) {
   return attributes.reduce((attrs, attribute) => {
     const { key, value } = attribute
     if (value === null) {
       return `${attrs} ${key}`
     }
-    const quoteEscape = value.indexOf("'") !== -1
-    const quote = quoteEscape ? '"' : "'"
+    let quote;
+    if (preferDoubleQuoteAttributes) {
+      const quoteEscape = value.indexOf('"') !== -1
+      quote = quoteEscape ? "'" : '"'
+    } else {
+      const quoteEscape = value.indexOf("'") !== -1
+      quote = quoteEscape ? '"' : "'"
+    }
     return `${attrs} ${key}=${quote}${value}${quote}`
   }, '')
 }
@@ -27,8 +33,8 @@ export function toHTML(tree, options) {
         tagName.toLowerCase(),
       )
       return isSelfClosing
-        ? `<${tagName}${formatAttributes(attributes)}>`
-        : `<${tagName}${formatAttributes(attributes)}>${toHTML(
+        ? `<${tagName}${formatAttributes(attributes, options.preferDoubleQuoteAttributes)}>`
+        : `<${tagName}${formatAttributes(attributes, options.preferDoubleQuoteAttributes)}>${toHTML(
             children,
             options,
           )}</${tagName}>`

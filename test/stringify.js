@@ -71,3 +71,18 @@ test('formatAttributes should stringify attribute lists correctly', (t) => {
     " data-key='123'",
   )
 })
+
+test('stringify() should use single quotes if attribute contains double quote', (t) => {
+  const html = `<div data-val='cake is "good"'></div>`
+  t.is(stringify(parse(html)), html)
+})
+
+test('stringify() should use double quotes if attribute contains single quote', (t) => {
+  const html = `<div data-val="cake is 'good'"></div>`
+  t.is(stringify(parse(html)), html)
+})
+
+test('stringify() should prefer double quotes if requested', (t) => {
+  const html = `<div data-val="cake is good"></div>`
+  t.is(stringify(parse(html), { preferDoubleQuoteAttributes: true }), html)
+})
