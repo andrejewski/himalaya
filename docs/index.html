@@ -89,6 +89,10 @@
         padding: 10px 20px;
       }
 
+      pre {
+        text-wrap: auto;
+      }
+
       #source {
         flex: 1;
         display: flex;
@@ -203,7 +207,7 @@
 
         $('#output-parse').innerText = JSON.stringify(code, null, 2)
 
-        var options = { preferDoubleQuoteAttributes: $('#prefer-double-quote-attributes').checked }
+        var options = { ...himalaya.parseDefaults, preferDoubleQuoteAttributes: $('#prefer-double-quote-attributes').checked }
         $('#output-stringify').innerText = himalaya.stringify(code, options)
       }
 
