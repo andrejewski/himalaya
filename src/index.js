@@ -19,11 +19,11 @@ export const parseDefaults = {
 }
 
 export function parse(str, options = parseDefaults) {
-  const tokens = lexer(str, { ...parseDefaults, ...options })
-  const nodes = parser(tokens, { ...parseDefaults, ...options })
-  return format(nodes, { ...parseDefaults, ...options })
+  const tokens = lexer(str, options)
+  const nodes = parser(tokens, options)
+  return format(nodes, options)
 }
 
 export function stringify(ast, options = parseDefaults) {
-  return toHTML(ast, { ...parseDefaults, ...options })
+  return toHTML(ast, options)
 }

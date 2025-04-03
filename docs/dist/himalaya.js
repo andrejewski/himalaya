@@ -114,12 +114,6 @@ var _format = require("./format");
 var _stringify = require("./stringify");
 var _tags = require("./tags");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
-function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 var parseDefaults = {
   voidTags: _tags.voidTags,
   closingTags: _tags.closingTags,
@@ -131,13 +125,13 @@ var parseDefaults = {
 exports.parseDefaults = parseDefaults;
 function parse(str) {
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : parseDefaults;
-  var tokens = (0, _lexer["default"])(str, _objectSpread(_objectSpread({}, parseDefaults), options));
-  var nodes = (0, _parser["default"])(tokens, _objectSpread(_objectSpread({}, parseDefaults), options));
-  return (0, _format.format)(nodes, _objectSpread(_objectSpread({}, parseDefaults), options));
+  var tokens = (0, _lexer["default"])(str, options);
+  var nodes = (0, _parser["default"])(tokens, options);
+  return (0, _format.format)(nodes, options);
 }
 function stringify(ast) {
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : parseDefaults;
-  return (0, _stringify.toHTML)(ast, _objectSpread(_objectSpread({}, parseDefaults), options));
+  return (0, _stringify.toHTML)(ast, options);
 }
 
 },{"./format":2,"./lexer":4,"./parser":5,"./stringify":6,"./tags":7}],4:[function(require,module,exports){

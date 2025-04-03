@@ -1,5 +1,5 @@
 import test from 'ava'
-import { parse, stringify } from '../lib'
+import { parse, parseDefaults, stringify } from '../lib'
 import { formatAttributes } from '../lib/stringify'
 
 test('stringify() should handle simple conversions', (t) => {
@@ -83,6 +83,7 @@ test('stringify() should use double quotes if attribute contains single quote', 
 })
 
 test('stringify() should prefer double quotes if requested', (t) => {
-  const html = `<div data-val="cake is good"></div>`
-  t.is(stringify(parse(html), { preferDoubleQuoteAttributes: true }), html)
+  const input = `<div data-val='cake is good'></div>`
+  const output = `<div data-val="cake is good"></div>`
+  t.is(stringify(parse(input), { ...parseDefaults, preferDoubleQuoteAttributes: true }), output)
 })
