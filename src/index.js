@@ -15,6 +15,7 @@ export const parseDefaults = {
   childlessTags,
   closingTagAncestorBreakers,
   includePositions: false,
+  preferDoubleQuoteAttributes: false,
 }
 
 export function parse(str, options = parseDefaults) {

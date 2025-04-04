@@ -23,6 +23,12 @@
         display: flex;
         align-items: center;
         padding: 10px 20px;
+        justify-content: space-between
+      }
+
+      header .info {
+        display: flex;
+        align-items: center;
       }
 
       header h1 {
@@ -83,6 +89,10 @@
         padding: 10px 20px;
       }
 
+      pre {
+        text-wrap: auto;
+      }
+
       #source {
         flex: 1;
         display: flex;
@@ -103,9 +113,17 @@
   <body>
     <div class='page'>
       <header>
-        <h1>Himalaya</h1>
-        <a href='https://github.com/andrejewski/himalaya'>on Github</a>
-        <a href='http://chrisandrejewski.com'>by Chris Andrejewski</a>
+        <div class='info'>
+          <h1>Himalaya</h1>
+          <a href='https://github.com/andrejewski/himalaya'>on Github</a>
+          <a href='http://chrisandrejewski.com'>by Chris Andrejewski</a>
+        </div>
+        <div>
+          <label>
+            <input id='show-stringify-pane' type='checkbox' />
+            <span>Show stringify pane</span>
+          </label>
+        </div>
       </header>
       <div class='converter'>
         <div class='split'>
@@ -129,7 +147,19 @@
             </label>
           </div>
           <div class='pane pane-output'>
-            <pre id='output'></pre>
+            <pre id='output-parse'></pre>
+          </div>
+        </div>
+        <div class='split' id="stringify-pane" style="display: none;">
+          <div class='pane-header'>
+            <label>Stringify</label>
+            <label>
+              <input id='prefer-double-quote-attributes' type='checkbox' />
+              <span>Prefer double quote attributes</span>
+            </label>
+          </div>
+          <div class='pane pane-output'>
+            <pre id='output-stringify'></pre>
           </div>
         </div>
       </div>
@@ -175,13 +205,23 @@
           code = removeWhitespace(code)
         }
 
-        $('#output').innerText = JSON.stringify(code, null, 2)
+        $('#output-parse').innerText = JSON.stringify(code, null, 2)
+
+        var options = { ...himalaya.parseDefaults, preferDoubleQuoteAttributes: $('#prefer-double-quote-attributes').checked }
+        $('#output-stringify').innerText = himalaya.stringify(code, options)
       }
 
       $('#source').onkeyup = updateOutput
       $('#whitespace').onchange = updateOutput
       $('#positions').onchange = updateOutput
+      $('#prefer-double-quote-attributes').onchange = updateOutput
       updateOutput()
+
+      function updatePaneDisplay () {
+        $('#stringify-pane').style.display = $('#show-stringify-pane').checked ? 'flex' : 'none'
+      }
+
+      $('#show-stringify-pane').onchange = updatePaneDisplay
     </script>
   </body>
 </html>

@@ -119,7 +119,8 @@ var parseDefaults = {
   closingTags: _tags.closingTags,
   childlessTags: _tags.childlessTags,
   closingTagAncestorBreakers: _tags.closingTagAncestorBreakers,
-  includePositions: false
+  includePositions: false,
+  preferDoubleQuoteAttributes: false
 };
 exports.parseDefaults = parseDefaults;
 function parse(str) {
@@ -643,15 +644,21 @@ exports["default"] = void 0;
 exports.formatAttributes = formatAttributes;
 exports.toHTML = toHTML;
 var _compat = require("./compat");
-function formatAttributes(attributes) {
+function formatAttributes(attributes, preferDoubleQuoteAttributes) {
   return attributes.reduce(function (attrs, attribute) {
     var key = attribute.key,
       value = attribute.value;
     if (value === null) {
       return "".concat(attrs, " ").concat(key);
     }
-    var quoteEscape = value.indexOf("'") !== -1;
-    var quote = quoteEscape ? '"' : "'";
+    var quote;
+    if (preferDoubleQuoteAttributes) {
+      var quoteEscape = value.indexOf('"') !== -1;
+      quote = quoteEscape ? "'" : '"';
+    } else {
+      var _quoteEscape = value.indexOf("'") !== -1;
+      quote = _quoteEscape ? '"' : "'";
+    }
     return "".concat(attrs, " ").concat(key, "=").concat(quote).concat(value).concat(quote);
   }, '');
 }
@@ -667,7 +674,7 @@ function toHTML(tree, options) {
       attributes = node.attributes,
       children = node.children;
     var isSelfClosing = (0, _compat.arrayIncludes)(options.voidTags, tagName.toLowerCase());
-    return isSelfClosing ? "<".concat(tagName).concat(formatAttributes(attributes), ">") : "<".concat(tagName).concat(formatAttributes(attributes), ">").concat(toHTML(children, options), "</").concat(tagName, ">");
+    return isSelfClosing ? "<".concat(tagName).concat(formatAttributes(attributes, options.preferDoubleQuoteAttributes), ">") : "<".concat(tagName).concat(formatAttributes(attributes, options.preferDoubleQuoteAttributes), ">").concat(toHTML(children, options), "</").concat(tagName, ">");
   }).join('');
 }
 var _default = {
