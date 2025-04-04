@@ -6,7 +6,7 @@ export function formatAttributes(attributes, preferDoubleQuoteAttributes) {
     if (value === null) {
       return `${attrs} ${key}`
     }
-    let quote;
+    let quote
     if (preferDoubleQuoteAttributes) {
       const quoteEscape = value.indexOf('"') !== -1
       quote = quoteEscape ? "'" : '"'
@@ -33,11 +33,14 @@ export function toHTML(tree, options) {
         tagName.toLowerCase(),
       )
       return isSelfClosing
-        ? `<${tagName}${formatAttributes(attributes, options.preferDoubleQuoteAttributes)}>`
-        : `<${tagName}${formatAttributes(attributes, options.preferDoubleQuoteAttributes)}>${toHTML(
-            children,
-            options,
-          )}</${tagName}>`
+        ? `<${tagName}${formatAttributes(
+            attributes,
+            options.preferDoubleQuoteAttributes,
+          )}>`
+        : `<${tagName}${formatAttributes(
+            attributes,
+            options.preferDoubleQuoteAttributes,
+          )}>${toHTML(children, options)}</${tagName}>`
     })
     .join('')
 }

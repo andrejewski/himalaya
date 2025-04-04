@@ -85,5 +85,11 @@ test('stringify() should use double quotes if attribute contains single quote', 
 test('stringify() should prefer double quotes if requested', (t) => {
   const input = `<div data-val='cake is good'></div>`
   const output = `<div data-val="cake is good"></div>`
-  t.is(stringify(parse(input), { ...parseDefaults, preferDoubleQuoteAttributes: true }), output)
+  t.is(
+    stringify(parse(input), {
+      ...parseDefaults,
+      preferDoubleQuoteAttributes: true,
+    }),
+    output,
+  )
 })
